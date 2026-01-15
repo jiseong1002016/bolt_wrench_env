@@ -93,6 +93,13 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Running on device: {device}")
 
+    # # 시각화 설정 (선택 사항)
+    # if cfg['environment']['render']:
+    #     try:
+    #         env.turn_on_visualization()
+    #     except Exception as e:
+    #         print(f"Visualization server could not be started: {e}")
+
     # === 3. 네트워크 아키텍처 정의 (Actor-Critic) ===
     # 관측값(Obs)과 행동(Action) 차원 가져오기
     ob_dim = env.num_obs
@@ -169,7 +176,9 @@ def main():
     # [Main Loop] 전체 업데이트 루프  
     # =========================================================================
     for update in range(max_updates):
-        
+        # visualization on
+        env.turn_on_visualization()
+
         # PPO Storage 초기화 (매 업데이트마다 비움)
         # raisimGymTorch PPO 구현체에 따라 storage.reset()이 필요할 수 있음
         # 여기서는 ppo.storage가 리스트나 텐서로 관리된다고 가정
@@ -177,7 +186,6 @@ def main():
         # 성능 모니터링 변수
         episodic_rewards = []
         cur_episode_reward = np.zeros(cfg['environment']['num_envs'])
-
         # =====================================================================
         # [Rollout Loop] n_steps 만큼 데이터 수집
         # =====================================================================
@@ -207,7 +215,7 @@ def main():
 
             # 3. 환경 상호작용 (Step)
             # action은 Tensor이므로 Numpy로 변환하여 환경에 전달
-            action_np = action.cpu().numpy()
+            action_np = action.cpu().numpy().astype(np.float32)
             reward, done = env.step(action_np) # Reward, Done (Numpy Arrays)
 
             # 4. 데이터 저장 (Storage)
@@ -243,10 +251,12 @@ def main():
                     episodic_rewards.append(cur_episode_reward[i])
                     cur_episode_reward[i] = 0.0
 
-            # 6. 시각화 (선택 사항)
-            if cfg['environment']['render']:
-                env.turn_on_visualization()
-                env.render()
+            # # 6. 시각화 (선택 사항)
+            # if cfg['environment']['render']:
+            #     # env.turn_on_visualization()
+            #     env.render()
+        # visualization off
+        env.turn_off_visualization()
 
         # =====================================================================
         # [Value Bootstrapping] 마지막 상태의 가치 계산 (GAE 계산용)

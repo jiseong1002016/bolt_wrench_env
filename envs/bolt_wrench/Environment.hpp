@@ -29,6 +29,13 @@ class ENVIRONMENT : public RaisimGymEnv {
     world_->setTimeStep(simulation_dt_);
     world_->addGround();
 
+    /// [해결책] 부모의 protected 멤버인 server_를 직접 제어
+    if (visualizable_) {
+      // 부모 클래스에 선언된 server_ 객체를 여기서 생성합니다.
+      server_ = std::make_unique<raisim::RaisimServer>(world_.get());
+      server_->launchServer();
+    }
+
     /// 3. 객체 스폰
     bolt_ = world_->addArticulatedSystem(
         resourceDir_ + "/bolt/bolt/urdf/bolt.urdf",
@@ -82,8 +89,8 @@ class ENVIRONMENT : public RaisimGymEnv {
 
     // ★ 사용자의 Custom 초기값 적용 (인덱스는 URDF에 맞게 조정 필요)
     // 예시: 7번이 left, 11번이 right 조인트라고 가정 (이전 코드 기반)
-    ee_gc[7] = ee_left_init_;  
-    ee_gc[11] = ee_right_init_;
+    // ee_gc[7] = ee_left_init_;  
+    // ee_gc[11] = ee_right_init_;
     
     end_effector_->setState(ee_gc, ee_gv);
 
@@ -91,41 +98,46 @@ class ENVIRONMENT : public RaisimGymEnv {
   }
 
   float step(const Eigen::Ref<EigenVec>& action) final {
-    Eigen::VectorXd tau_total = action.cast<double>();
+    server_->focusOn(end_effector_);
     
-    if(tau_total.size() != end_effector_->getDOF()) {
-        tau_total = Eigen::VectorXd::Zero(end_effector_->getDOF());
+    // [수정 1] Action은 루프 밖에서 변환해 둡니다 (Base Torque)
+    Eigen::VectorXd action_command = action.cast<double>();
+    // Eigen::VectorXd action_command = Eigen::VectorXd::Zero(end_effector_->getDOF()); // <-- 강제 0 할당
+    
+    if(action_command.size() != end_effector_->getDOF()) {
+        action_command = Eigen::VectorXd::Zero(end_effector_->getDOF());
     }
-
-    // [3] 상시 적용되는 Grasping Force 추가 (TC=true 효과)
-    // 에이전트가 내는 행동(Action)에 "기본 악력"을 더해줍니다.
-    // 인덱스 6, 13 등은 URDF 조인트 인덱스 확인 필수!
-    tau_total[6] += ee_left_force_;
-    tau_total[13] += ee_right_force_;
 
     /// Simulation Loop
     for (int i = 0; i < int(control_dt_ / simulation_dt_); i++) {
+      // [수정 2] 매 스텝마다 action_command를 복사하여 '현재 스텝용 토크'를 만듭니다.
+      // 이렇게 해야 이전 스텝의 tau_gear가 누적되지 않습니다.
+      Eigen::VectorXd tau_step = action_command;
+
       const auto& gc = end_effector_->getGeneralizedCoordinate();
       const auto& gv = end_effector_->getGeneralizedVelocity();
 
-      // Gear Coupling
+      // Gear Coupling Logic
       double error_p1 = gc[7] + gc[11];
       double error_v1 = gv[6] + gv[10];
+      // [복구 추천] 누적 버그가 사라지면 kp를 다시 10000.0으로 올려도 됩니다.
       double tau_gear1 = -kp_gear_ * error_p1 - kd_gear_ * error_v1;
 
       double error_p2 = gc[10] + gc[14];
       double error_v2 = gv[9] + gv[13];
       double tau_gear2 = -kp_gear_ * error_p2 - kd_gear_ * error_v2;
 
-      tau_total[6] += tau_gear1;
-      tau_total[10] += tau_gear1;
-      tau_total[9] += tau_gear2;
-      tau_total[13] += tau_gear2;
+      // [수정 3] 현재 스텝용 변수(tau_step)에 더합니다.
+      tau_step[6] += tau_gear1;
+      tau_step[10] += tau_gear1;
+      tau_step[9] += tau_gear2;
+      tau_step[13] += tau_gear2;
 
-      end_effector_->setGeneralizedForce(tau_total);
+      // [수정 4] 최종 토크 인가
+      end_effector_->setGeneralizedForce(tau_step);
       world_->integrate();
 
-      // Thread Pitch Logic
+      // Thread Pitch Logic (Bolt)
       double angle = bolt_->getGeneralizedCoordinate()[1]; 
       double omega = bolt_->getGeneralizedVelocity()[1]; 
       double translation = angle / (2.0 * M_PI) * thread_pitch_; 
@@ -173,11 +185,11 @@ class ENVIRONMENT : public RaisimGymEnv {
   raisim::ArticulatedSystem* wrench_;
   raisim::ArticulatedSystem* end_effector_;
   
-  double simulation_dt_ = 0.0001;
+  double simulation_dt_ = 0.0001; // diverse at 0.0001
   double control_dt_ = 0.01;
   double thread_pitch_ = 0.002;
-  double kp_gear_ = 10000.0;
-  double kd_gear_ = 1.0;
+  double kp_gear_ = 10000.0; // diverse at 10000.0
+  double kd_gear_ = 1.0;  // diverse at 1.0
   double terminalRewardCoeff_ = -10.0;
   
   std::string resourceDir_;

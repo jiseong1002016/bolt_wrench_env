@@ -3,9 +3,9 @@ record_video: true
 
 environment:
   render: true
-  num_envs: 50
+  num_envs: 1
   eval_every_n: 50
-  num_threads: 10
+  num_threads: 1
   
   # [기존 설정 유지]
   simulation_dt: 0.0001
