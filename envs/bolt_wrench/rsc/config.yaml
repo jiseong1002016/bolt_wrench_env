@@ -1,0 +1,39 @@
+seed: 1
+record_video: true
+
+environment:
+  render: true
+  num_envs: 50
+  eval_every_n: 50
+  num_threads: 10
+  
+  # [기존 설정 유지]
+  simulation_dt: 0.0001
+  control_dt: 0.01
+  max_total_steps: 2000  # maxSimSteps와 유사 (에피소드 최대 길이)
+  
+  # [사용자님의 커스텀 파라미터 추가]
+  thread_pitch: 0.01     # 기존 값 0.01 적용
+  pris_joint_index: 0
+  
+  # 초기 자세 (Grasping Initial Config)
+  ee_01_left_gc: -0.2
+  ee_02_right_gc: 0.96
+  
+  # 상시 적용 힘 (Constant Grasping Force)
+  # 주석에 있던 계산식(68.0 * 0.3) 등은 미리 계산해서 넣거나 C++에서 처리
+  ee_01_left_gf: 0.0
+  ee_02_right_gf: -10.0 
+
+  # PPO 학습 설정
+  learning_rate: 3e-4
+  n_steps: 200
+  n_minibatch: 4
+  n_epoch: 4
+  gamma: 0.995
+  lam: 0.95
+  mini_batch_size: 256
+
+architecture:
+  policy_net: [128, 128]
+  value_net: [128, 128]

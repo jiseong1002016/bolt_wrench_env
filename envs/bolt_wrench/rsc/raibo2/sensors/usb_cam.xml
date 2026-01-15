@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<sensor_set name="usb_cam">
+    <link>
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.130" />
+            <inertia ixx="0.0001014" ixy="0.0" ixz="0.0" iyy="0.000033657" iyz="0.0" izz="0.000116838" />
+        </inertial>
+        <sensor name="color" type="rgb" update_rate="30">
+            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+            <camera horizontal_fov="1.9199">
+                <image width="640" height="360"/>
+                <clip near="0.1" far="100"/>
+                <noise type="gaussian" mean="0.0" stddev="0.007"/>
+            </camera>
+        </sensor>
+    </link>
+</sensor_set>

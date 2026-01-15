@@ -1,0 +1,1 @@
+controller_joint_names: ['ee_02_right', 'ee_01_left', 'ee_13_left', 'ee_34_left', 'ee_02_left', 'ee_01_right', 'ee_13_right', 'ee_34_right', 'ee_02_right', ]

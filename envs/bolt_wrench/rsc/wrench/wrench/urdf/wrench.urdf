@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="wrench">
+  <link
+    name="wrench">
+    <inertial>
+      <origin
+        xyz="0.082521 0.012646 -7.679E-19"
+        rpy="0 0 0" />
+      <mass
+        value="0.18231" />
+      <inertia
+        ixx="2.7774E-05"
+        ixy="-0.00010051"
+        ixz="7.1459E-21"
+        iyy="0.00057025"
+        iyz="1.1919E-21"
+        izz="0.00059607" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/wrench.obj" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.77647 0.75686 0.73725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/wrench.obj" />
+      </geometry>
+    </collision>
+  </link>
+</robot>
