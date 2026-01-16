@@ -11,51 +11,18 @@ sys.path.append(current_dir + "/build")
 import bolt_wrench
 from raisimGymTorch.env.RaisimGymVecEnv import RaisimGymVecEnv as VecEnv
 from raisimGymTorch.helper.raisim_gym_helper import ConfigurationSaver, load_param, tensorboard_launcher
+from raisimGymTorch.env.bin.bolt_wrench import NormalSampler
 
 # [수정 1] PPO 경로를 rsg_anymal과 동일하게 수정
 import raisimGymTorch.algo.ppo.ppo as PPO
 import raisimGymTorch.algo.ppo.module as ppo_module
 
 import os
-import math
 import argparse
 import numpy as np
 import torch
 import torch.nn as nn
 import datetime
-
-# [수정된 MLP 클래스]
-class MLP(nn.Module):
-    def __init__(self, input_dim, output_dim, architecture, activation=nn.LeakyReLU, discrete=False):
-        super(MLP, self).__init__()
-        self.input_dim = input_dim
-        self.output_dim = output_dim
-        
-        # [핵심 추가] PPO 알고리즘이 요구하는 속성 정의
-        self.obs_shape = [input_dim]      # 관측값 차원 (리스트 형태)
-        self.action_shape = [output_dim]  # 행동 차원 (리스트 형태)
-        
-        self.architecture_cfg = architecture
-        self.activation = activation
-        self.discrete = discrete 
-
-        layers = []
-        prev_dim = input_dim
-        for hidden_dim in architecture:
-            layers.append(nn.Linear(prev_dim, hidden_dim))
-            layers.append(activation())
-            prev_dim = hidden_dim
-        layers.append(nn.Linear(prev_dim, output_dim))
-        
-        self.net = nn.Sequential(*layers)
-        
-        # 호환성을 위한 별칭
-        self.architecture = self.net 
-        
-        self.log_std = nn.Parameter(torch.zeros(output_dim))
-
-    def forward(self, x):
-        return self.net(x)
 
 def main():
     # === 1. 설정 및 Config 로드 ===
@@ -105,43 +72,49 @@ def main():
     ob_dim = env.num_obs
     act_dim = env.num_acts
 
-    # Config에서 네트워크 구조 읽기 (예: [128, 128])
-    # config.yaml에 architecture: { policy_net: [128, 128], value_net: [128, 128] } 항목이 필요함
-    policy_net_args = {'architecture': cfg['architecture']['policy_net'], 'activation': nn.LeakyReLU}
-    value_net_args = {'architecture': cfg['architecture']['value_net'], 'activation': nn.LeakyReLU}
-
     # PPO 모듈 사용 (rsg_anymal 스타일)
-    # Actor와 Critic을 각각의 MLP로 생성
-    policy_net = MLP(ob_dim, act_dim, cfg['architecture']['policy_net'], nn.LeakyReLU).to(device)
-    value_net = MLP(ob_dim, 1, cfg['architecture']['value_net'], nn.LeakyReLU).to(device)
+    actor = ppo_module.Actor(
+        ppo_module.MLP(cfg['architecture']['policy_net'], nn.LeakyReLU, ob_dim, act_dim),
+        ppo_module.MultivariateGaussianDiagonalCovariance(
+            act_dim,
+            cfg['environment']['num_envs'],
+            1.0,
+            NormalSampler(act_dim),
+            cfg['seed']
+        ),
+        device
+    )
+    critic = ppo_module.Critic(
+        ppo_module.MLP(cfg['architecture']['value_net'], nn.LeakyReLU, ob_dim, 1),
+        device
+    )
 
-    # # Pre-trained 가중치가 있다면 로드 (Fine-tuning용)
-    # if args.weight is not None:
-    #     checkpoint = torch.load(args.weight)
-    #     policy_net.load_state_dict(checkpoint['actor_architecture_state_dict'])
-    #     value_net.load_state_dict(checkpoint['critic_architecture_state_dict'])
-    #     print(f"Loaded weights from {args.weight}")
+    # Pre-trained 가중치가 있다면 로드 (Fine-tuning용)
+    if args.weight is not None:
+        checkpoint = torch.load(args.weight, map_location=device)
+        actor.architecture.load_state_dict(checkpoint['actor_architecture_state_dict'])
+        actor.distribution.load_state_dict(checkpoint['actor_distribution_state_dict'])
+        critic.architecture.load_state_dict(checkpoint['critic_architecture_state_dict'])
+        print(f"Loaded weights from {args.weight}")
 
     # === 4. PPO 알고리즘 초기화 ===
     # PPO 학습 파라미터 로드
     n_steps = cfg['environment']['n_steps'] # 한 번의 업데이트를 위해 모으는 데이터 길이 (Horizon)
     
-    # Optimizer 설정
-    # PPO 클래스에 actor/critic 객체를 주입합니다.
     ppo = PPO.PPO(
-        actor=policy_net,
-        critic=value_net,
+        actor=actor,
+        critic=critic,
         num_envs=cfg['environment']['num_envs'],
         num_transitions_per_env=n_steps,
-        num_learning_epochs=4,            # PPO Epoch (보통 4~10)
-        gamma=0.996,                      # Discount factor
-        lam=0.95,                         # GAE parameter
-        num_mini_batches=4,               # Mini-batch splitting
+        num_learning_epochs=cfg['environment'].get('n_epoch', 4),
+        gamma=cfg['environment'].get('gamma', 0.996),
+        lam=cfg['environment'].get('lam', 0.95),
+        num_mini_batches=cfg['environment'].get('n_minibatch', 4),
         device=device,
         log_dir=output_dir,
         shuffle_batch=True,
         learning_rate=cfg['environment']['learning_rate'],
-        entropy_coef=0.0                  # Exploration을 위한 엔트로피 계수
+        entropy_coef=0.0
     )
 
     # 설정을 저장 (나중에 재현하기 위함)
@@ -161,19 +134,10 @@ def main():
     curriculum_factor = 1.0  # RFCL 시작: 1.0(Goal) -> 0.0(Start)
     env.wrapper.setCurriculumFactor(curriculum_factor)
     
-    # 학습 가능한 Log Standard Deviation (행동의 분산)
-    # 초기에는 탐험을 많이 하도록 설정 (예: 0.0 -> exp(0)=1.0)
-    log_std = torch.zeros(act_dim, requires_grad=True, device=device)
-    optimizer = torch.optim.Adam([
-        {'params': policy_net.parameters(), 'lr': cfg['environment']['learning_rate']},
-        {'params': value_net.parameters(), 'lr': cfg['environment']['learning_rate']},
-        {'params': log_std, 'lr': cfg['environment']['learning_rate']}
-    ])
-
     print(f"Starting Training with Curriculum Factor: {curriculum_factor}")
 
     # =========================================================================
-    # [Main Loop] 전체 업데이트 루프  
+    # [Main Loop] 전체 업데이트 루프
     # =========================================================================
     for update in range(max_updates):
         # visualization on
@@ -192,53 +156,13 @@ def main():
         for step in range(n_steps):
             # 1. 관측 (Observe)
             obs = env.observe() # Shape: (num_envs, obs_dim) (Numpy)
-            obs_tensor = torch.from_numpy(obs).float().to(device)
+            action = ppo.act(obs)
 
-            # 2. 신경망 추론 (Inference)
-            with torch.no_grad():
-                # Actor: 행동의 평균 계산
-                action_mean = policy_net.architecture(obs_tensor)
-                
-                # Critic: 현재 상태의 가치(Value) 계산
-                value = value_net.architecture(obs_tensor)
+            # 2. 환경 상호작용 (Step)
+            reward, done = env.step(action) # Reward, Done (Numpy Arrays)
 
-                # Action Sampling (Stochastic Policy)
-                # std = exp(log_std)
-                std = torch.exp(log_std)
-                dist = torch.distributions.Normal(action_mean, std)
-                
-                action = dist.sample() # 실제 실행할 행동 샘플링
-                
-                # Action Log Probability & Entropy 계산 (PPO 업데이트용)
-                # Multi-dimensional action이므로 sum() 필요
-                log_prob = dist.log_prob(action).sum(dim=-1, keepdim=True)
-
-            # 3. 환경 상호작용 (Step)
-            # action은 Tensor이므로 Numpy로 변환하여 환경에 전달
-            action_np = action.cpu().numpy().astype(np.float32)
-            reward, done = env.step(action_np) # Reward, Done (Numpy Arrays)
-
-            # 4. 데이터 저장 (Storage)
-            # PPO 객체 내부의 storage에 transition 저장
-            # (구현체에 따라 ppo.push 등의 메서드일 수 있음. 여기선 일반적인 형태)
-            # PPO에 필요한 분포 파라미터(mu, sigma)를 Numpy로 변환
-            # std는 현재 (act_dim,) 모양의 텐서이므로, (num_envs, act_dim)으로 확장해야 함
-            mu_np = action_mean.cpu().numpy()
-            sigma_np = std.unsqueeze(0).expand_as(action_mean).cpu().numpy()
-            log_prob_np = log_prob.cpu().numpy()
-
-            # 2. 데이터 저장
-            # obs는 이미 Numpy 배열입니다 (env.observe()의 반환값)
-            ppo.storage.add_transitions(
-                actor_obs=obs,       
-                critic_obs=obs,      # Actor와 Critic이 같은 관측값을 쓴다고 가정
-                actions=action_np,
-                mu=mu_np,
-                sigma=sigma_np,
-                rewards=reward,
-                dones=done,
-                actions_log_prob=log_prob_np
-            )
+            # 3. 데이터 저장 (Storage)
+            ppo.step(value_obs=obs, rews=reward, dones=done)
 
             # 5. 성공률/보상 집계 (RFCL용)
             cur_episode_reward += reward
@@ -259,28 +183,14 @@ def main():
         env.turn_off_visualization()
 
         # =====================================================================
-        # [Value Bootstrapping] 마지막 상태의 가치 계산 (GAE 계산용)
-        # =====================================================================
-        with torch.no_grad():
-            next_obs = env.observe()
-            next_obs_tensor = torch.from_numpy(next_obs).float().to(device)
-            next_value = value_net.architecture(next_obs_tensor)
-            
-            # PPO Storage에 마지막 Value 전달하여 GAE(Generalized Advantage Estimation) 계산
-            ppo.storage.compute_returns(next_value, cfg['environment']['gamma'], cfg['environment']['lam'])
-
-        # ... (Phase 3에서 계속: 업데이트 및 커리큘럼 조절) ...
-        # ... (Phase 2 코드의 Rollout Loop 및 GAE 계산 직후) ...
-
-        # =====================================================================
         # [Update] PPO 최적화 (Optimization)
         # =====================================================================
-        # PPO 클래스 내부의 optimize 함수를 호출하여 그라디언트 업데이트 수행
-        # (actor_loss, value_loss 등을 반환받음)
-        mean_value_loss, mean_surrogate_loss = ppo.optimize(optimizer)
+        next_obs = env.observe()
+        log_this_iteration = update % 10 == 0
+        ppo.update(actor_obs=next_obs, value_obs=next_obs, log_this_iteration=log_this_iteration, update=update)
 
-        # 사용한 데이터 비우기 (On-policy이므로 재사용 불가)
-        ppo.storage.clear()
+        actor.update()
+        actor.distribution.enforce_minimum_std((torch.ones(act_dim) * 0.2).to(device))
 
         # =====================================================================
         # [Metrics] 성능 평가
@@ -326,10 +236,10 @@ def main():
             save_path = os.path.join(output_dir, skill_filename)
             
             torch.save({
-                'actor_architecture_state_dict': policy_net.state_dict(),
-                'critic_architecture_state_dict': value_net.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'log_std': log_std,
+                'actor_architecture_state_dict': actor.architecture.state_dict(),
+                'actor_distribution_state_dict': actor.distribution.state_dict(),
+                'critic_architecture_state_dict': critic.architecture.state_dict(),
+                'optimizer_state_dict': ppo.optimizer.state_dict(),
                 'curriculum_factor': curriculum_factor
             }, save_path)
             
@@ -349,8 +259,7 @@ def main():
         if update % 10 == 0:
             print(f"Update {update}/{max_updates} | "
                   f"Factor: {curriculum_factor:.2f} | "
-                  f"Reward: {avg_reward:.2f} | "
-                  f"Value Loss: {mean_value_loss:.4f}")
+                  f"Reward: {avg_reward:.2f}")
             
             # 텐서보드 로깅 (선택)
             # tensorboard_launcher.add_scalar("Reward/Average", avg_reward, update)
@@ -359,9 +268,10 @@ def main():
         # 주기적 체크포인트 저장 (비상용)
         if update % 500 == 0:
             torch.save({
-                'actor_architecture_state_dict': policy_net.state_dict(),
-                'critic_architecture_state_dict': value_net.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict()
+                'actor_architecture_state_dict': actor.architecture.state_dict(),
+                'actor_distribution_state_dict': actor.distribution.state_dict(),
+                'critic_architecture_state_dict': critic.architecture.state_dict(),
+                'optimizer_state_dict': ppo.optimizer.state_dict()
             }, os.path.join(output_dir, f"checkpoint_{update}.pt"))
 
     # 학습 종료

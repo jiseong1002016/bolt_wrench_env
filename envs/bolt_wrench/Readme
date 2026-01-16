@@ -1,8 +1,0 @@
-cd build
-cmake ..
-cmake --build .
-cd ..
-python runner.py
-
-
-100, 0.1 에서 가만히 회전
