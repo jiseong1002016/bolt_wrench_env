@@ -77,7 +77,7 @@ void SetEndEffectorGeneralizedCoordinates(
 
     Eigen::VectorXd positions = end_effector->getGeneralizedCoordinate().e();
     
-    if(positions.size() >= 15) {
+    if (positions.size() >= 8) {
         positions.tail(8) << gc_7, -gc_14-gc_7, gc_14+gc_7, -gc_14, -gc_7, gc_14+gc_7, -gc_14-gc_7, gc_14;
     }
 

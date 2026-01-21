@@ -3,6 +3,11 @@ project(raisim_gym_bolt_wrench)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Default to Release if no build type is specified (single-config generators).
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 # 1. 패키지 찾기
 find_package(raisim CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -49,3 +54,21 @@ target_link_libraries(bolt_wrench PUBLIC
 if(UNIX)
   target_compile_options(bolt_wrench PRIVATE -O3 -ffast-math -g -fPIC)
 endif()
+
+# 7. Demo generator executable (disabled)
+# add_executable(demo_generator
+#   demo_generator.cpp
+#   ${CMAKE_CURRENT_SOURCE_DIR}/../../Yaml.cpp
+# )
+# target_include_directories(demo_generator PUBLIC
+#   ${CMAKE_CURRENT_SOURCE_DIR}
+#   ${EIGEN3_INCLUDE_DIRS}
+#   ${RAISIM_INCLUDE_DIRS}
+# )
+# target_link_libraries(demo_generator PUBLIC
+#   raisim::raisim
+#   Eigen3::Eigen
+# )
+# if(UNIX)
+#   target_compile_options(demo_generator PRIVATE -O3 -ffast-math -g)
+# endif()

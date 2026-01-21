@@ -11,7 +11,7 @@ sys.path.append(current_dir + "/build")
 import bolt_wrench
 from raisimGymTorch.env.RaisimGymVecEnv import RaisimGymVecEnv as VecEnv
 from raisimGymTorch.helper.raisim_gym_helper import ConfigurationSaver, load_param, tensorboard_launcher
-from raisimGymTorch.env.bin.bolt_wrench import NormalSampler
+# from raisimGymTorch.env.bin.bolt_wrench import NormalSampler
 
 # [수정 1] PPO 경로를 rsg_anymal과 동일하게 수정
 import raisimGymTorch.algo.ppo.ppo as PPO
@@ -42,7 +42,7 @@ def main():
     # 시간 기반 로그 디렉토리 생성
     time_str = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     run_name = f"RFCL_BoltWrench_{time_str}"
-    output_dir = f"{task_path}/data/{run_name}"
+    output_dir = f"{task_path}/data/log/{run_name}"
     os.makedirs(output_dir, exist_ok=True)
 
     # === 2. 환경(Environment) 생성 ===
@@ -60,12 +60,12 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Running on device: {device}")
 
-    # # 시각화 설정 (선택 사항)
-    # if cfg['environment']['render']:
-    #     try:
-    #         env.turn_on_visualization()
-    #     except Exception as e:
-    #         print(f"Visualization server could not be started: {e}")
+    # 시각화 설정 (선택 사항)
+    if cfg['environment']['render']:
+        try:
+            env.turn_on_visualization()
+        except Exception as e:
+            print(f"Visualization server could not be started: {e}")
 
     # === 3. 네트워크 아키텍처 정의 (Actor-Critic) ===
     # 관측값(Obs)과 행동(Action) 차원 가져오기
@@ -79,7 +79,8 @@ def main():
             act_dim,
             cfg['environment']['num_envs'],
             1.0,
-            NormalSampler(act_dim),
+            # NormalSampler(act_dim),
+            bolt_wrench.NormalSampler(act_dim),
             cfg['seed']
         ),
         device
@@ -126,11 +127,43 @@ def main():
 
     print("Initialization Complete. Starting Training Loop...")
 
+    demo_root = os.path.join(task_path, "data", "demo")
+    demo_dirs = []
+    for d in os.listdir(demo_root):
+        demo_dir = os.path.join(demo_root, d)
+        if not os.path.isdir(demo_dir):
+            continue
+        if os.path.isfile(os.path.join(demo_dir, "demo_bolt_gc.npy")):
+            demo_dirs.append(d)
+    if not demo_dirs:
+        raise FileNotFoundError(f"No demo data directories with demo_bolt_gc.npy found under {demo_root}")
+    latest_demo_dir = os.path.join(demo_root, sorted(demo_dirs)[-1])
+
+    demo_bolt_gc = np.load(os.path.join(latest_demo_dir, "demo_bolt_gc.npy")).astype(np.float64)
+    demo_bolt_gv = np.load(os.path.join(latest_demo_dir, "demo_bolt_gv.npy")).astype(np.float64)
+    demo_wrench_gc = np.load(os.path.join(latest_demo_dir, "demo_wrench_gc.npy")).astype(np.float64)
+    demo_wrench_gv = np.load(os.path.join(latest_demo_dir, "demo_wrench_gv.npy")).astype(np.float64)
+    demo_robot_gc = np.load(os.path.join(latest_demo_dir, "demo_robot_gc.npy")).astype(np.float64)
+    demo_robot_gv = np.load(os.path.join(latest_demo_dir, "demo_robot_gv.npy")).astype(np.float64)
+
+    demo_len = demo_robot_gc.shape[0]
+    if not (demo_bolt_gc.shape[0] == demo_bolt_gv.shape[0] == demo_wrench_gc.shape[0] ==
+            demo_wrench_gv.shape[0] == demo_robot_gc.shape[0] == demo_robot_gv.shape[0]):
+        raise ValueError("All demo_* buffers must have the same number of samples")
+
+    def sample_demo_indices(factor, num_envs, length):
+        center_idx = int(np.clip(factor, 0.0, 1.0) * (length - 1))
+        window = max(1, int(0.05 * length))
+        low = max(0, center_idx - window)
+        high = min(length - 1, center_idx + window)
+        return np.random.randint(low, high + 1, size=num_envs)
+
     # ... (Phase 2에서 계속) ...
     # ... (Phase 1 코드에 이어짐) ...
 
     # === 5. 학습 루프 초기화 ===
     max_updates = cfg['environment']['max_total_steps'] // n_steps
+    total_steps = n_steps * cfg['environment']['num_envs']
     curriculum_factor = 1.0  # RFCL 시작: 1.0(Goal) -> 0.0(Start)
     env.wrapper.setCurriculumFactor(curriculum_factor)
     
@@ -140,6 +173,7 @@ def main():
     # [Main Loop] 전체 업데이트 루프
     # =========================================================================
     for update in range(max_updates):
+        start = datetime.datetime.now()
         # visualization on
         env.turn_on_visualization()
 
@@ -150,10 +184,22 @@ def main():
         # 성능 모니터링 변수
         episodic_rewards = []
         cur_episode_reward = np.zeros(cfg['environment']['num_envs'])
+        reward_sum = 0.0
+        done_sum = 0.0
         # =====================================================================
         # [Rollout Loop] n_steps 만큼 데이터 수집
         # =====================================================================
         for step in range(n_steps):
+            if step == 0:
+                indices = sample_demo_indices(curriculum_factor, cfg['environment']['num_envs'], demo_len)
+                bolt_gc = demo_bolt_gc[indices]
+                bolt_gv = demo_bolt_gv[indices]
+                wrench_gc = demo_wrench_gc[indices]
+                wrench_gv = demo_wrench_gv[indices]
+                robot_gc = demo_robot_gc[indices]
+                robot_gv = demo_robot_gv[indices]
+                env.wrapper.reset_to_demo_state(bolt_gc, bolt_gv, wrench_gc, wrench_gv, robot_gc, robot_gv)
+
             # 1. 관측 (Observe)
             obs = env.observe() # Shape: (num_envs, obs_dim) (Numpy)
             action = ppo.act(obs)
@@ -166,6 +212,8 @@ def main():
 
             # 5. 성공률/보상 집계 (RFCL용)
             cur_episode_reward += reward
+            reward_sum += np.sum(reward)
+            done_sum += np.sum(done)
             
             # Done이 발생한 환경 처리
             # RaiSimGymVecEnv는 자동으로 reset()을 호출하므로, 
@@ -256,10 +304,20 @@ def main():
         # =====================================================================
         # [Logging] 로그 출력 및 주기적 저장
         # =====================================================================
-        if update % 10 == 0:
-            print(f"Update {update}/{max_updates} | "
-                  f"Factor: {curriculum_factor:.2f} | "
-                  f"Reward: {avg_reward:.2f}")
+        end = datetime.datetime.now()
+        elapsed = (end - start).total_seconds()
+        average_ll_performance = reward_sum / total_steps if total_steps > 0 else 0.0
+        average_dones = done_sum / total_steps if total_steps > 0 else 0.0
+
+        print('----------------------------------------------------')
+        print('{:>6}th iteration'.format(update))
+        print('{:<40} {:>6}'.format("average ll reward: ", '{:0.10f}'.format(average_ll_performance)))
+        print('{:<40} {:>6}'.format("dones: ", '{:0.6f}'.format(average_dones)))
+        print('{:<40} {:>6}'.format("time elapsed in this iteration: ", '{:6.4f}'.format(elapsed)))
+        print('{:<40} {:>6}'.format("fps: ", '{:6.0f}'.format(total_steps / elapsed if elapsed > 0 else 0.0)))
+        print('{:<40} {:>6}'.format("real time factor: ", '{:6.0f}'.format(total_steps / elapsed * cfg['environment']['control_dt'] if elapsed > 0 else 0.0)))
+        print('{:<40} {:>6}'.format("curriculum factor: ", '{:0.3f}'.format(curriculum_factor)))
+        print('----------------------------------------------------\n')
             
             # 텐서보드 로깅 (선택)
             # tensorboard_launcher.add_scalar("Reward/Average", avg_reward, update)

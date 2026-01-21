@@ -127,11 +127,11 @@ bolt_wrench.so: CMakeFiles/bolt_wrench.dir/UtilityFunctions.cpp.o
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/build.make
-bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimd.so.1.1.8
-bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimPngd.so
-bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimZd.so
-bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimODEd.so.1.1.8
-bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimMined.so
+bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisim.so.1.1.8
+bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimPng.so
+bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimZ.so
+bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimODE.so.1.1.8
+bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimMine.so
 bolt_wrench.so: /usr/lib/gcc/x86_64-linux-gnu/12/libgomp.so
 bolt_wrench.so: /usr/lib/x86_64-linux-gnu/libpthread.a
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/link.txt

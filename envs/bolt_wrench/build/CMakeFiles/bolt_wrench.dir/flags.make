@@ -6,5 +6,5 @@ CXX_DEFINES = -DENVIRONMENT_NAME=RaisimGymEnv -DRAISIMGYM_TORCH_ENV_NAME=bolt_wr
 
 CXX_INCLUDES = -I/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench -isystem /home/Jiseong/anaconda3/envs/raisim/include/eigen3 -isystem /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include -isystem /home/Jiseong/anaconda3/envs/raisim/include/python3.10
 
-CXX_FLAGS = -std=gnu++17 -fPIC -O3 -ffast-math -g -fPIC -fopenmp
+CXX_FLAGS = -O3 -DNDEBUG -std=gnu++17 -fPIC -O3 -ffast-math -g -fPIC -fopenmp
 

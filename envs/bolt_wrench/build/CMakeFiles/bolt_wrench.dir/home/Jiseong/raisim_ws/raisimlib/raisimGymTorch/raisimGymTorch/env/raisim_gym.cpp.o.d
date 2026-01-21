@@ -558,53 +558,29 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/SparseCore/SparseFuzzy.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/SparseCore/SparseSolverBase.h \
  /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/Environment.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/../../RaisimGymEnv.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/../../Common.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/World.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/helper.hpp \
  /usr/include/c++/12/chrono /usr/include/c++/12/bits/chrono.h \
  /usr/include/c++/12/ratio /usr/include/c++/12/ctime \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/raisim_message.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/raisim_message_logger.hpp \
- /usr/include/c++/12/iomanip /usr/include/c++/12/locale \
- /usr/include/c++/12/bits/locale_facets_nonio.h \
- /usr/include/x86_64-linux-gnu/c++/12/bits/time_members.h \
- /usr/include/x86_64-linux-gnu/c++/12/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/12/bits/codecvt.h \
- /usr/include/c++/12/bits/locale_facets_nonio.tcc \
- /usr/include/c++/12/bits/locale_conv.h \
- /usr/include/c++/12/bits/quoted_string.h /usr/include/c++/12/fstream \
- /usr/include/x86_64-linux-gnu/c++/12/bits/basic_file.h \
- /usr/include/x86_64-linux-gnu/c++/12/bits/c++io.h \
- /usr/include/c++/12/bits/fstream.tcc \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/Path.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/raisim_message.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/object/Object.hpp \
- /usr/include/c++/12/mutex /usr/include/c++/12/bits/std_mutex.h \
- /usr/include/c++/12/bits/unique_lock.h \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/contact/BisectionContactSolver.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/Materials.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/RaiSimTinyXmlWrapper.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/tinyxml_rai/tinyxml_rai.h \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/tinyxml_rai/tinystr.h \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/math.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/math/Core.hpp \
- /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/math/Expression.hpp \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Dense \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/LU \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/misc/Kernel.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/misc/Image.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/FullPivLU.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/PartialPivLU.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/Determinant.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/InverseImpl.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/arch/InverseSize4.h \
+ /usr/include/arpa/inet.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+ /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
+ /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
+ /usr/include/x86_64-linux-gnu/asm/socket.h \
+ /usr/include/asm-generic/socket.h \
+ /usr/include/x86_64-linux-gnu/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
+ /usr/include/x86_64-linux-gnu/bits/socket2.h \
+ /usr/include/x86_64-linux-gnu/bits/in.h \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Geometry \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/SVD \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/QR \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Cholesky \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Jacobi \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Jacobi/Jacobi.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Cholesky/LLT.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Cholesky/LDLT.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/QR \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Householder \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Householder/Householder.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Householder/HouseholderSequence.h \
@@ -613,13 +589,19 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/QR/FullPivHouseholderQR.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/QR/ColPivHouseholderQR.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/SVD \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/misc/RealSvd2x2.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/SVD/UpperBidiagonalization.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/SVD/SVDBase.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/SVD/JacobiSVD.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/SVD/BDCSVD.h \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Geometry \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/LU \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/misc/Kernel.h \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/misc/Image.h \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/FullPivLU.h \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/PartialPivLU.h \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/Determinant.h \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/InverseImpl.h \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/LU/arch/InverseSize4.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Geometry/OrthoMethods.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Geometry/EulerAngles.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Geometry/Homogeneous.h \
@@ -635,6 +617,38 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Geometry/AlignedBox.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Geometry/Umeyama.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Geometry/arch/Geometry_SIMD.h \
+ /usr/include/c++/12/fstream /usr/include/c++/12/bits/codecvt.h \
+ /usr/include/x86_64-linux-gnu/c++/12/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/12/bits/c++io.h \
+ /usr/include/c++/12/bits/fstream.tcc \
+ /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/../../RaisimGymEnv.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/../../Common.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/World.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/helper.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/raisim_message.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/raisim_message_logger.hpp \
+ /usr/include/c++/12/iomanip /usr/include/c++/12/locale \
+ /usr/include/c++/12/bits/locale_facets_nonio.h \
+ /usr/include/x86_64-linux-gnu/c++/12/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/12/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/12/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/12/bits/locale_conv.h \
+ /usr/include/c++/12/bits/quoted_string.h \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/Path.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/raisim_message.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/object/Object.hpp \
+ /usr/include/c++/12/mutex /usr/include/c++/12/bits/std_mutex.h \
+ /usr/include/c++/12/bits/unique_lock.h \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/contact/BisectionContactSolver.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/Materials.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/RaiSimTinyXmlWrapper.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/tinyxml_rai/tinyxml_rai.h \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/tinyxml_rai/tinystr.h \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/math.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/math/Core.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/math/Expression.hpp \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Dense \
+ /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Geometry \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Eigenvalues \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h \
  /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/src/Eigenvalues/RealSchur.h \
@@ -682,7 +696,6 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/ode/version.h \
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/ode/odecpp_collision.h \
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/object/singleBodies/SingleBodyObject.hpp \
- /home/Jiseong/anaconda3/envs/raisim/include/eigen3/Eigen/Geometry \
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/object/singleBodies/Sphere.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/object/singleBodies/SingleBodyObject.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/object/singleBodies/Cylinder.hpp \
@@ -718,20 +731,7 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/object/ArticulatedSystem/ArticulatedSystem.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/configure.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisim/linux/include/raisim/RaisimServer.hpp \
- /usr/include/arpa/inet.h /usr/include/netinet/in.h \
- /usr/include/x86_64-linux-gnu/sys/socket.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
- /usr/include/x86_64-linux-gnu/bits/socket.h \
- /usr/include/x86_64-linux-gnu/bits/socket_type.h \
- /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
- /usr/include/x86_64-linux-gnu/asm/socket.h \
- /usr/include/asm-generic/socket.h \
- /usr/include/x86_64-linux-gnu/asm/sockios.h \
- /usr/include/asm-generic/sockios.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
- /usr/include/x86_64-linux-gnu/bits/socket2.h \
- /usr/include/x86_64-linux-gnu/bits/in.h /usr/include/fcntl.h \
- /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/fcntl.h /usr/include/x86_64-linux-gnu/bits/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/linux/falloc.h /usr/include/x86_64-linux-gnu/bits/fcntl2.h \
  /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/signal.h \
@@ -771,5 +771,6 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
  /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/../../Yaml.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/../../Reward.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/UtilityFunctions.hpp \
+ /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/include/JointCommandGenerator.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/VectorizedEnvironment.hpp \
  /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/RaisimGymEnv.hpp
