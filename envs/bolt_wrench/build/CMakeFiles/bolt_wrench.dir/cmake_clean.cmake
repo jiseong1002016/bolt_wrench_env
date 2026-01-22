@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.o"
+  "CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.o.d"
   "CMakeFiles/bolt_wrench.dir/UtilityFunctions.cpp.o"
   "CMakeFiles/bolt_wrench.dir/UtilityFunctions.cpp.o.d"
   "CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o"

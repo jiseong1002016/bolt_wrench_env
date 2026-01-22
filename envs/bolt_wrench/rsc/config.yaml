@@ -31,6 +31,10 @@ environment:
 
   # command mode
   use_action_command: false
+  command_mode: grasp  # sine | grasp
+  grasp_gc14_start: 0.6
+  grasp_gc14_duration: 5.0
+  grasp_approach_duration: 5.0
   
   # [사용자님의 커스텀 파라미터 추가]
   thread_pitch: 0.01     # 기존 값 0.01 적용

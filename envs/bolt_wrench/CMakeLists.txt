@@ -17,6 +17,7 @@ find_package(OpenMP REQUIRED)
 # 2. 라이브러리 소스
 set(src
     UtilityFunctions.cpp
+    JointCommandGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../raisim_gym.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Yaml.cpp 
 )

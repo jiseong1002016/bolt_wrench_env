@@ -4,6 +4,8 @@
 #include <set>
 #include <cmath>
 #include <chrono>
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #if defined(__linux__) || defined(__APPLE__)
 #include <arpa/inet.h>
@@ -39,6 +41,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     ee_right_init_ = cfg["ee_02_right_gc"].template As<double>();
     ee_left_force_ = cfg["ee_01_left_gf"].template As<double>();
     ee_right_force_ = cfg["ee_02_right_gf"].template As<double>();
+    grasp_gc14_start_ = ee_right_init_;
 
     if (&cfg["action_scale"]) {
       action_scale_ = cfg["action_scale"].template As<double>();
@@ -48,6 +51,18 @@ class ENVIRONMENT : public RaisimGymEnv {
     }
     if (&cfg["use_action_command"]) {
       use_action_command_ = cfg["use_action_command"].template As<bool>();
+    }
+    if (&cfg["command_mode"]) {
+      std::string mode = cfg["command_mode"].template As<std::string>();
+      std::transform(mode.begin(),
+                     mode.end(),
+                     mode.begin(),
+                     [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+      if (mode == "grasp") {
+        command_mode_ = JointCommandMode::kGrasp;
+      } else {
+        command_mode_ = JointCommandMode::kSine;
+      }
     }
     if (&cfg["active_kp"]) {
       active_kp_ = cfg["active_kp"].template As<double>();
@@ -60,6 +75,15 @@ class ENVIRONMENT : public RaisimGymEnv {
     }
     if (&cfg["kd_gear"]) {
       kd_gear_ = cfg["kd_gear"].template As<double>();
+    }
+    if (&cfg["grasp_gc14_start"]) {
+      grasp_gc14_start_ = cfg["grasp_gc14_start"].template As<double>();
+    }
+    if (&cfg["grasp_gc14_duration"]) {
+      grasp_gc14_duration_ = cfg["grasp_gc14_duration"].template As<double>();
+    }
+    if (&cfg["grasp_approach_duration"]) {
+      grasp_approach_duration_ = cfg["grasp_approach_duration"].template As<double>();
     }
 
     const auto& wrench_offset_node = cfg["wrench_offset"];
@@ -117,6 +141,17 @@ class ENVIRONMENT : public RaisimGymEnv {
       ee_frame_idx_ = 0;
     }
 
+    ee_4_left_frame_idx_ =
+        end_effector_->getFrameIdxByLinkName(ee_4_left_frame_name_);
+    if (ee_4_left_frame_idx_ >= end_effector_->getFrames().size()) {
+      ee_4_left_frame_idx_ = 0;
+    }
+    ee_4_right_frame_idx_ =
+        end_effector_->getFrameIdxByLinkName(ee_4_right_frame_name_);
+    if (ee_4_right_frame_idx_ >= end_effector_->getFrames().size()) {
+      ee_4_right_frame_idx_ = 0;
+    }
+
     wrench_frame_idx_ = wrench_->getFrameIdxByLinkName(wrench_frame_name_);
     if (wrench_frame_idx_ >= wrench_->getFrames().size()) {
       wrench_frame_idx_ = 0;
@@ -167,7 +202,14 @@ class ENVIRONMENT : public RaisimGymEnv {
       const Eigen::Vector3d base_pos_init(0.0, 0.0, 0.15);
       const Eigen::Quaterniond base_quat_init(1.0, 0.0, 0.0, 0.0);
       joint_command_generator_ = std::make_unique<JointCommandGenerator>(
-          base_pos_init, base_quat_init, ee_left_init_, ee_right_init_);
+          base_pos_init,
+          base_quat_init,
+          ee_left_init_,
+          ee_right_init_,
+          command_mode_,
+          grasp_gc14_start_,
+          grasp_gc14_duration_,
+          grasp_approach_duration_);
       joint_command_vector_.setZero(JointCommandGenerator::kCommandDim);
       if (server_) {
         joint_command_vis_.setZero(static_cast<size_t>(joint_command_vector_.size()));
@@ -253,7 +295,43 @@ class ENVIRONMENT : public RaisimGymEnv {
           action_command.head(JointCommandGenerator::kCommandDim), joint_command_);
       has_command = true;
     } else if (joint_command_generator_) {
-      joint_command_generator_->update(joint_command_, now);
+      GraspContext grasp_context;
+      GraspContext* grasp_context_ptr = nullptr;
+      if (command_mode_ == JointCommandMode::kGrasp && base_gc_dim == 7) {
+        raisim::Vec<3> wrench_pos_W;
+        raisim::Mat<3, 3> wrench_rot_W;
+        wrench_->getFramePosition(wrench_frame_idx_, wrench_pos_W);
+        wrench_->getFrameOrientation(wrench_frame_idx_, wrench_rot_W);
+        const Eigen::Vector3d wrench_pos = wrench_pos_W.e();
+        const Eigen::Matrix3d R_wrench = wrench_rot_W.e();
+        grasp_context.target_center_world =
+            wrench_pos + R_wrench * grasp_target_offset_wrench_;
+        grasp_context.target_base_quat = Eigen::Quaterniond(R_wrench).normalized();
+
+        raisim::Vec<3> ee_left_pos_W;
+        raisim::Mat<3, 3> ee_left_rot_W;
+        end_effector_->getFramePosition(ee_4_left_frame_idx_, ee_left_pos_W);
+        end_effector_->getFrameOrientation(ee_4_left_frame_idx_, ee_left_rot_W);
+        const Eigen::Vector3d left_world =
+            ee_left_pos_W.e() + ee_left_rot_W.e() * grasp_point_left_local_;
+
+        raisim::Vec<3> ee_right_pos_W;
+        raisim::Mat<3, 3> ee_right_rot_W;
+        end_effector_->getFramePosition(ee_4_right_frame_idx_, ee_right_pos_W);
+        end_effector_->getFrameOrientation(ee_4_right_frame_idx_, ee_right_rot_W);
+        const Eigen::Vector3d right_world =
+            ee_right_pos_W.e() + ee_right_rot_W.e() * grasp_point_right_local_;
+
+        const Eigen::Vector3d center_world = 0.5 * (left_world + right_world);
+        const auto& gc = end_effector_->getGeneralizedCoordinate();
+        Eigen::Vector3d base_pos(gc[0], gc[1], gc[2]);
+        Eigen::Quaterniond base_quat(gc[3], gc[4], gc[5], gc[6]);
+        base_quat.normalize();
+        grasp_context.grasp_center_offset_base =
+            base_quat.toRotationMatrix().transpose() * (center_world - base_pos);
+        grasp_context_ptr = &grasp_context;
+      }
+      joint_command_generator_->update(joint_command_, now, grasp_context_ptr);
       has_command = true;
     }
     const auto command_end = Clock::now();
@@ -481,14 +559,30 @@ class ENVIRONMENT : public RaisimGymEnv {
   double action_scale_;
   double action_rot_scale_;
 
+  JointCommandMode command_mode_ = JointCommandMode::kSine;
+  double grasp_gc14_start_ = 0.0;
+  double grasp_gc14_duration_ = 1.0;
+  double grasp_approach_duration_ = 5.0;
+
   Eigen::Vector3d wrench_offset_ = Eigen::Vector3d(0.0, 0.0, -0.166);
   Eigen::Quaterniond wrench_rot_offset_ = Eigen::Quaterniond::Identity();
   std::string ee_frame_name_ = "ee_base";
   size_t ee_frame_idx_ = 0;
+  std::string ee_4_left_frame_name_ = "ee_4_left";
+  size_t ee_4_left_frame_idx_ = 0;
+  std::string ee_4_right_frame_name_ = "ee_4_right";
+  size_t ee_4_right_frame_idx_ = 0;
   std::string wrench_frame_name_ = "wrench";
   size_t wrench_frame_idx_ = 0;
   std::string bolt_frame_name_ = "bolt_rev";
   size_t bolt_frame_idx_ = 0;
+
+  const Eigen::Vector3d grasp_point_left_local_ =
+      Eigen::Vector3d(0.01091, 0.0375, 0.0);
+  const Eigen::Vector3d grasp_point_right_local_ =
+      Eigen::Vector3d(-0.01091, 0.0375, 0.0);
+  const Eigen::Vector3d grasp_target_offset_wrench_ =
+      Eigen::Vector3d(0.082521, 0.012646, -7.679E-19);
 
   int render_port_ = 8080;
   std::unique_ptr<JointCommandGenerator> joint_command_generator_;

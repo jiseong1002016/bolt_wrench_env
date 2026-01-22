@@ -129,6 +129,30 @@ bolt_wrench/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/build
 .PHONY : bolt_wrench/fast
 
+JointCommandGenerator.o: JointCommandGenerator.cpp.o
+.PHONY : JointCommandGenerator.o
+
+# target to build an object file
+JointCommandGenerator.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.o
+.PHONY : JointCommandGenerator.cpp.o
+
+JointCommandGenerator.i: JointCommandGenerator.cpp.i
+.PHONY : JointCommandGenerator.i
+
+# target to preprocess a source file
+JointCommandGenerator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.i
+.PHONY : JointCommandGenerator.cpp.i
+
+JointCommandGenerator.s: JointCommandGenerator.cpp.s
+.PHONY : JointCommandGenerator.s
+
+# target to generate assembly for a file
+JointCommandGenerator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.s
+.PHONY : JointCommandGenerator.cpp.s
+
 UtilityFunctions.o: UtilityFunctions.cpp.o
 .PHONY : UtilityFunctions.o
 
@@ -210,6 +234,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... bolt_wrench"
+	@echo "... JointCommandGenerator.o"
+	@echo "... JointCommandGenerator.i"
+	@echo "... JointCommandGenerator.s"
 	@echo "... UtilityFunctions.o"
 	@echo "... UtilityFunctions.i"
 	@echo "... UtilityFunctions.s"
