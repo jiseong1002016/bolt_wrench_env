@@ -1,0 +1,52 @@
+  <link name="R_stub">
+    <!-- CHH / 2025-10-17-21:18 -->
+    <!-- link name: [stub-5]-->
+    <!-- frame: [RE_end-effector]-->
+    <inertial>
+      <origin 
+        xyz="5.000000e-5 -0.08895000 0.02623000"
+        rpy="0 0 0" />
+      <mass value="5.52298000" />
+      <inertia
+          ixx="0.02835114"
+          ixy="7.398080e-6"
+          ixz="2.272770e-6"
+          iyy="0.05347586"
+          iyz="0.00010221"
+          izz="0.02830810" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stub_5.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.4 0.4 0.4 1" />
+      </material>
+    </visual>
+  </link>
+
+  <joint name="RE_end_effector_fixed" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 3.141592" />
+    <parent link="R_ee" />
+    <child link="R_stub" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+
+  <link name="R_stub-tip"></link>
+
+  <joint name="RE_tip_fixed" type="fixed">
+    <origin
+      xyz="0 -0.157 0.0264"
+      rpy="-1.5708 0 3.141592" />
+    <parent link="R_stub" />
+    <child link="R_stub-tip" />
+    <axis
+      xyz="0 0 0" />
+  </joint>

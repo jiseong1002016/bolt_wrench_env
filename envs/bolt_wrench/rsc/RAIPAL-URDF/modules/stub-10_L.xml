@@ -1,0 +1,52 @@
+  <link name="L_stub">
+    <!-- CHH / 2025-10-17-16:12 -->
+    <!-- link name: [stub-10]-->
+    <!-- frame: [LE_end-effector]-->
+    <inertial>
+      <origin 
+        xyz="4.000000e-5 -0.10515000 0.02631000"
+        rpy="0 0 0" />
+      <mass value="10.52298000" />
+      <inertia
+          ixx="0.05836641"
+          ixy="1.193012e-5"
+          ixz="-3.170800e-7"
+          iyy="0.10652337"
+          iyz="0.00011810"
+          izz="0.05832640" />
+    </inertial>
+
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stub_10.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.4 0.4 0.4 1" />
+      </material>
+    </visual>
+  </link>
+
+  <joint name="LE_end_effector_fixed" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent link="L_ee" />
+    <child link="L_stub" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="L_stub-tip"></link>
+
+  <joint name="LE_tip_fixed" type="fixed">
+    <origin
+      xyz="0 -0.157 0.0264"
+      rpy="+1.5708 0 0" />
+    <parent link="L_stub" />
+    <child link="L_stub-tip" />
+    <axis
+      xyz="0 0 0" />
+  </joint>

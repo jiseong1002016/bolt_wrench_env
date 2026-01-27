@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="raipal_stub-5_L">
+  <!-- [URDF-WRITER] Created with urdf-writer script (by CHH) on 2026-01-27 21:55:36.753656-->
+
+  <!-- [URDF-WRITER] from module [_fixed-base] -->
+
+  <!-- this link makes the robot fixed-base in RAISIM -->
+  <link name="world"></link>
+
+  <link name="base"></link>
+
+  <joint name="base_fix" type="fixed">
+    <origin xyz="0 0 0.8" rpy="0 0 0"/>
+    <parent link="world" />
+    <child link="base" />
+    <axis xyz="0 0 0" />
+  </joint>
+
+
+  <!-- [URDF-WRITER] from module [raipal_L] -->
+
+  <link name="L_base">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- mirrored from [L_base] (frame: R0_base)-->
+    <inertial>
+      <origin 
+        xyz="-0.00013000 0.06389000 -0.05559000"
+        rpy="0 0 0" />
+      <mass value="0.79658000" />
+      <inertia
+          ixx="0.00074742"
+          ixy="-1.892780e-6"
+          ixz="-1.179560e-6"
+          iyy="0.00098187"
+          iyz="0.00013334"
+          izz="0.00082394" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_base.STL" />
+      </geometry>
+      <material name="">
+        <color rgba=".6 .6 .6 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_base.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L_fix" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base" />
+    <child link="L_base" />
+    <axis xyz="0 0 0" />
+  </joint>
+
+  <link name="L_collar">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- mirrored from [L_collar] (frame: R1_flexion)-->
+    <inertial>
+      <origin 
+        xyz="0.00471000 1.000000e-5 0.10057000"
+        rpy="0 0 0" />
+      <mass value="1.72283000" />
+      <inertia
+          ixx="0.00466072"
+          ixy="-5.127800e-7"
+          ixz="-0.00028338"
+          iyy="0.00434837"
+          iyz="-8.010400e-7"
+          izz="0.00167296" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_collar.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_collar.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L1_flexion" type="revolute"> <!--[0]-->
+    <origin
+      xyz="0 0.037198 -0.0709"
+      rpy="-1.0472 0 0" />
+    <parent link="L_base" />
+    <child link="L_collar" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="3.14"
+      effort="181"
+      velocity="13.9" />
+    <dynamics rotor_inertia = "0.0576402034658611" />
+    <!-- Calculated by CHH on 2025-09-01-20:14-->  
+  </joint>
+
+  <link name="L_shoulder">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- mirrored from [L_shoulder] (frame: R2_adduction)-->
+    <inertial>
+      <origin 
+        xyz="-0.03309000 -0.04277000 0.04408000"
+        rpy="0 0 0" />
+      <mass value="1.92988000" />
+      <inertia
+          ixx="0.00554587"
+          ixy="-0.00224326"
+          ixz="-0.00046924"
+          iyy="0.00422168"
+          iyz="-0.00058524"
+          izz="0.00699049" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_shoulder.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.6 0.6 0.6 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_shoulder.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L2_adduction" type="revolute"> <!--[1]-->
+    <origin
+      xyz="0.0373 0 0.1418"
+      rpy="1.5707963267949 1.0472 -1.5707963267949" />
+    <parent link="L_collar" />
+    <child link="L_shoulder" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.618"
+      upper="0.488"
+      effort="181"
+      velocity="13.9" />
+    <dynamics rotor_inertia = "0.0576402034658611" /> <!-- CHH / 2025-09-01-20:30-->
+  </joint>
+
+  <link name="L_humerus">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- mirrored from [L_humerus] (frame: R3_rotation)-->
+    <inertial>
+      <origin 
+        xyz="-0.00369000 -0.00351000 0.11625000"
+        rpy="0 0 0" />
+      <mass value="1.96262000" />
+      <inertia
+          ixx="0.00777442"
+          ixy="1.197057e-5"
+          ixz="0.00065917"
+          iyy="0.00822155"
+          iyz="0.00015972"
+          izz="0.00201683" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_humerus.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_humerus.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L3_rotation" type="revolute"> <!--[2]-->
+    <origin
+      xyz="-0.06 -0.06025 0.0373"
+      rpy="1.5707963267949 1.5707963267949 0" />
+    <parent link="L_shoulder" />
+    <child link="L_humerus" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="181"
+      velocity="13.9" />
+    <dynamics rotor_inertia = "0.0576402034658611" /> <!-- CHH / 2025-09-01-20:30-->
+  </joint>
+
+  <link name="L_elb_input">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- mirrored from [L_elb_input] (frame: R4a_elbow_power)-->
+    <inertial>
+      <origin 
+        xyz="-2.000000e-5 -0.00335000 0.05897000"
+        rpy="0 0 0" />
+      <mass value="0.83412000" />
+      <inertia
+          ixx="0.00071114"
+          ixy="-7.660000e-7"
+          ixz="-9.255500e-7"
+          iyy="0.00059983"
+          iyz="5.504818e-5"
+          izz="0.00080767" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_elb_input.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.6 0.6 0.6 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_elb_input.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L4a_elbow_power" type="revolute"> <!--[3]-->
+    <origin
+      xyz="0 -0.0373 0.1418"
+      rpy="-1.5707963267949 0 0" />
+    <parent link="L_humerus" />
+    <child link="L_elb_input" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.556"
+      effort="181"
+      velocity="13.9" />
+    <dynamics rotor_inertia = "0.0576402034658611" /> <!-- CHH / 2025-09-01-20:30-->
+  </joint>
+
+  <link name="L_elb_bar">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- mirrored from [L_elb_bar] (frame: R4b_elbow_bar_input)-->
+    <inertial>
+      <origin 
+        xyz="0.04274000 -0.00159000 -4.000000e-5"
+        rpy="0 0 0" />
+      <mass value="0.05314000" />
+      <inertia
+          ixx="2.335610e-6"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="6.149582e-5"
+          iyz="3.110000e-9"
+          izz="6.199993e-5" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_elb_bar.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.5 0.5 0.5 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_elb_bar.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L4b_elbow_bar_input" type="revolute">  <!--[4-unpowered]-->
+    <origin
+      xyz="0.00134978286029327 -0.0599848154638326 0.0812119041053838"
+      rpy="0 0 -1.12941902735751" />
+    <parent link="L_elb_input" />
+    <child link="L_elb_bar" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.802"
+      effort="0"
+      velocity="100" />
+  </joint>
+
+  <link name="L_ulna">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- mirrored from [L_ulna] (frame: R4_elbow)-->
+    <inertial>
+      <origin 
+        xyz="0.00533000 -0.01576000 -0.03891000"
+        rpy="0 0 0" />
+      <mass value="0.36947000" />
+      <inertia
+          ixx="0.00032310"
+          ixy="1.385696e-5"
+          ixz="-4.244104e-5"
+          iyy="0.00036383"
+          iyz="5.919040e-6"
+          izz="0.00020708" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_ulna.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_ulna.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L4_elbow" type="revolute">  <!--[5-unpowered]-->
+    <origin
+      xyz="0 0.043912 0.25475"
+      rpy="-1.5707963267949 0 0" />
+    <parent link="L_humerus" />
+    <child link="L_ulna" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="2.2689"
+      effort="0"
+      velocity="100" />
+  </joint>
+
+  <link name="L_radius">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- link name: [L_radius]-->
+    <!-- frame: [L5_roll]-->
+    <inertial>
+      <origin 
+        xyz="0.00151000 0.0 0.10290000"
+        rpy="0 0 0" />
+      <mass value="0.42307000" />
+      <inertia
+          ixx="0.00112662"
+          ixy="1.975000e-8"
+          ixz="-5.589578e-5"
+          iyy="0.00120471"
+          iyz="-1.556000e-8"
+          izz="0.00024138" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_radius.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.6 0.6 0.6 1" />
+      </material>
+    </visual>
+    <!--<collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_radius.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L5_roll" type="revolute"> <!--[6]-->
+    <origin
+      xyz="0 0.0135819531869474 -0.0439119041053754"
+      rpy="1.5707963267949 0 0" />
+    <parent link="L_ulna" />
+    <child link="L_radius" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="12.61"
+      velocity="53.8" />
+    <dynamics rotor_inertia = "0.000540543349430043" /> <!-- CHH / 2025-09-01-20:30-->
+  </joint>
+
+  <link name="L_carpal">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- link name: [L_carpal]-->
+    <!-- frame: [L6_pitch]-->
+    <inertial>
+      <origin 
+        xyz="-0.00117000 -0.03421000 0.02964000"
+        rpy="0 0 0" />
+      <mass value="0.67981000" />
+      <inertia
+          ixx="0.00128813"
+          ixy="-3.134577e-5"
+          ixz="3.268690e-6"
+          iyy="0.00040998"
+          iyz="9.323146e-5"
+          izz="0.00126953" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_carpal.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <!--<collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_carpal.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L6_pitch" type="revolute"> <!--[7]-->
+    <origin
+      xyz="-0.0337 0 0.153581953186935"
+      rpy="-1.5707963267949 0 -1.5707963267949" />
+    <parent link="L_radius" />
+    <child link="L_carpal" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="12.61"
+      velocity="53.8" />
+    <dynamics rotor_inertia = "0.000540543349430043" /> <!-- CHH / 2025-09-01-20:30-->
+  </joint>
+
+  <link name="L_ee">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <!-- link name: [L_ee]-->
+    <!-- frame: [L7_yaw]-->
+    <inertial>
+      <origin 
+        xyz="0.0 0.0 0.04531000"
+        rpy="0 0 0" />
+      <mass value="0.13143000" />
+      <inertia
+          ixx="3.339173e-5"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="3.339173e-5"
+          iyz="0.0"
+          izz="4.133016e-5" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_ee.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.6 0.6 0.6 1" />
+      </material>
+    </visual>
+    <!--<collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/L_ee.STL" />
+      </geometry>
+    </collision>-->
+  </link>
+
+  <joint name="L7_yaw" type="revolute"> <!--[8]-->
+    <origin
+      xyz="0.0264 -0.073 0.0337"
+      rpy="0 -1.5707963267949 0" />
+    <parent link="L_carpal" />
+    <child link="L_ee" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57079"
+      upper="1.57079"
+      effort="12.61"
+      velocity="53.8" />
+    <dynamics rotor_inertia = "0.000540543349430043" /> <!-- CHH / 2025-09-01-20:30-->
+  </joint>
+
+  <!-- imaginary links for loop closure -->
+  <link name="L_loop_barside"></link>
+
+  <joint name="L4cA_elbow_loop_bar" type="fixed">
+    <origin
+      xyz="0.0854747786370337 0 0"
+      rpy="0 0 0" />
+    <parent link="L_elb_bar" />
+    <child link="L_loop_barside" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="0"
+      velocity="100" />
+  </joint>
+
+  <link name="L_loop_ulnaside"></link>
+
+  <joint name="L4cB_elbow_loop_ulna_fixed" type="fixed">
+    <origin
+      xyz="0.0378633410992504 -0.0243180468130526 0"
+      rpy="0 0 -1.12941902735751" />
+    <parent link="L_ulna" />
+    <child link="L_loop_ulnaside" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  
+
+  <!-- [URDF-WRITER] from module [stub-5_L] -->
+  <link name="L_stub">
+    <!-- CHH / 2025-10-17-21:18 -->
+    <!-- link name: [stub-5]-->
+    <!-- frame: [RE_end-effector]-->
+    <inertial>
+      <origin 
+        xyz="5.000000e-5 -0.08895000 0.02623000"
+        rpy="0 0 0" />
+      <mass value="5.52298000" />
+      <inertia
+          ixx="0.02835114"
+          ixy="7.398080e-6"
+          ixz="2.272770e-6"
+          iyy="0.05347586"
+          iyz="0.00010221"
+          izz="0.02830810" />
+    </inertial>
+
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stub_5.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.4 0.4 0.4 1" />
+      </material>
+    </visual>
+  </link>
+
+  <joint name="LE_end_effector_fixed" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent link="L_ee" />
+    <child link="L_stub" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="L_stub-tip"></link>
+
+  <joint name="LE_tip_fixed" type="fixed">
+    <origin
+      xyz="0 -0.157 0.0264"
+      rpy="+1.5708 0 0" />
+    <parent link="L_stub" />
+    <child link="L_stub-tip" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <!-- [URDF-WRITER] merged constraints -->
+  <constraints nominal_config="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0">
+    <pin body1="L_loop_barside" body2="L_loop_ulnaside" anchor="0.0 0.0 0.0"/>
+  </constraints>
+
+</robot>
