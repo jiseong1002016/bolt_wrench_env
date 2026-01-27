@@ -18,12 +18,6 @@ enum class JointCommandMode {
   kGrasp,
 };
 
-struct GraspContext {
-  Eigen::Vector3d target_center_world = Eigen::Vector3d::Zero();
-  Eigen::Vector3d grasp_center_offset_base = Eigen::Vector3d::Zero();
-  Eigen::Quaterniond target_base_quat = Eigen::Quaterniond::Identity();
-};
-
 class JointCommandGenerator {
  public:
   // [변경] Environment.hpp에서 넘겨준 초기값을 저장합니다.
@@ -33,12 +27,14 @@ class JointCommandGenerator {
                         double gc14_init,
                         JointCommandMode mode,
                         double grasp_gc14_start,
+                        double grasp_gc14_target,
                         double grasp_gc14_duration,
-                        double grasp_approach_duration);
+                        double grasp_approach_duration,
+                        double grasp_move_duration,
+                        double grasp_rotate_duration,
+                        double grasp_rotate_radius);
 
-  void update(JointCommand& command,
-              double sec,
-              const GraspContext* grasp_context = nullptr) const;
+  void update(JointCommand& command, double sec) const;
 
   static constexpr int kCommandDim = 11;
 
@@ -56,8 +52,12 @@ class JointCommandGenerator {
   double gc14_init_;
   JointCommandMode command_mode_;
   double grasp_gc14_start_;
+  double grasp_gc14_target_;
   double grasp_gc14_duration_;
   double grasp_approach_duration_;
+  double grasp_move_duration_;
+  double grasp_rotate_duration_;
+  double grasp_rotate_radius_;
 
   // Constants for Range
   const double gc7_min_ = -0.960;

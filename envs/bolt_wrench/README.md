@@ -12,7 +12,6 @@ cd build && cmake .. && cmake --build . && cd ..
 Demo Genarate
 -----
 python demo_generator.py
-python demo_generator.py --render
 
 Build & Demo Generate 
 -----

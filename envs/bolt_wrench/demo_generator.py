@@ -142,18 +142,6 @@ def main() -> int:
     try:
         while args.steps < 0 or step < args.steps:
             step_start = time.perf_counter()
-            command = np.zeros((env.num_envs, 9), dtype=np.float32)
-            t = sim_time
-            command[:, 0] = 0.0
-            command[:, 1] = 0.0
-            command[:, 2] = 0.15
-            command[:, 3] = 1.0
-            command[:, 4] = 0.0
-            command[:, 5] = 0.0
-            command[:, 6] = 0.0
-            command[:, 7] = -0.414 + 0.273 * np.sin(2.0 * np.pi * 1.0 * t)
-            command[:, 8] = 0.48 + 0.24 * np.sin(2.0 * np.pi * 1.0 * t + np.pi / 2.0)
-            action[:, :9] = command
             env.step(action)
             bolt_gc, bolt_gv, wrench_gc, wrench_gv, robot_gc, robot_gv = env.wrapper.get_demo_state()
             log_bolt_gc.append(bolt_gc[0].copy())
