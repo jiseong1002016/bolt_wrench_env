@@ -1,0 +1,53 @@
+  <link name="R_saber">
+    <!-- CHH / 2025-09-01-20:14 -->
+    <inertial>
+      <origin 
+        xyz="0.11183000 0.21907000 0.02364000"
+        rpy="0 0 0" />
+      <mass value="0.30670000" />
+      <inertia
+          ixx="0.02001065"
+          ixy="-0.01687536"
+          ixz="-9.085322e-5"
+          iyy="0.01548451"
+          iyz="-0.00019124"
+          izz="0.03529250" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/R_saber.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 0.1 0.15 1" />
+      </material>
+    </visual>
+    <!--</collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/R_saber.STL" />
+      </geometry>
+    </collision>-->
+    <collision>
+      <origin
+        xyz="0.28803051240434 0.44003051240434 0.0264 "
+        rpy="0.7854 1.5708 -1.5708" />
+      <geometry>
+        <cylinder radius="0.02125" length="1.126" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="RE_end_effector_fixed" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent link="R_ee" />
+    <child link="R_saber" />
+    <axis
+      xyz="0 0 0" />
+  </joint>

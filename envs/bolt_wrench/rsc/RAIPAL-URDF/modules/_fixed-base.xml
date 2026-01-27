@@ -1,0 +1,13 @@
+
+  <!-- this link makes the robot fixed-base in RAISIM -->
+  <link name="world"></link>
+
+  <link name="base"></link>
+
+  <joint name="base_fix" type="fixed">
+    <origin xyz="0 0 0.8" rpy="0 0 0"/>
+    <parent link="world" />
+    <child link="base" />
+    <axis xyz="0 0 0" />
+  </joint>
+
