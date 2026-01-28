@@ -199,6 +199,41 @@ class VectorizedEnvironment {
     }
   }
 
+  std::tuple<
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>
+  getDemoState() const {
+    RSFATAL_IF(environments_.empty(), "getDemoState: no environments available")
+
+    Eigen::VectorXd bolt_gc, bolt_gv, wrench_gc, wrench_gv, robot_gc, robot_gv;
+    environments_.front()->getDemoState(bolt_gc, bolt_gv, wrench_gc, wrench_gv, robot_gc, robot_gv);
+
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> bolt_gc_batch(num_envs_, bolt_gc.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> bolt_gv_batch(num_envs_, bolt_gv.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> wrench_gc_batch(num_envs_, wrench_gc.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> wrench_gv_batch(num_envs_, wrench_gv.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> robot_gc_batch(num_envs_, robot_gc.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> robot_gv_batch(num_envs_, robot_gv.size());
+
+    for (int i = 0; i < num_envs_; i++) {
+      environments_[i]->getDemoState(bolt_gc, bolt_gv, wrench_gc, wrench_gv, robot_gc, robot_gv);
+      bolt_gc_batch.row(i) = bolt_gc.transpose();
+      bolt_gv_batch.row(i) = bolt_gv.transpose();
+      wrench_gc_batch.row(i) = wrench_gc.transpose();
+      wrench_gv_batch.row(i) = wrench_gv.transpose();
+      robot_gc_batch.row(i) = robot_gc.transpose();
+      robot_gv_batch.row(i) = robot_gv.transpose();
+    }
+
+    return std::make_tuple(bolt_gc_batch, bolt_gv_batch,
+                           wrench_gc_batch, wrench_gv_batch,
+                           robot_gc_batch, robot_gv_batch);
+  }
+
  private:
   void updateObservationStatisticsAndNormalize(Eigen::Ref<EigenRowMajorMat> &ob, bool updateStatistics) {
     if (updateStatistics) {
