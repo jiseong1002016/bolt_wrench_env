@@ -199,43 +199,6 @@ class VectorizedEnvironment {
     }
   }
 
-  std::tuple<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
-             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> getDemoState() {
-    Eigen::VectorXd bolt_gc0, bolt_gv0, wrench_gc0, wrench_gv0, robot_gc0, robot_gv0;
-    environments_[0]->getDemoState(bolt_gc0, bolt_gv0, wrench_gc0, wrench_gv0, robot_gc0, robot_gv0);
-
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> bolt_gc(num_envs_, bolt_gc0.size());
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> bolt_gv(num_envs_, bolt_gv0.size());
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> wrench_gc(num_envs_, wrench_gc0.size());
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> wrench_gv(num_envs_, wrench_gv0.size());
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> robot_gc(num_envs_, robot_gc0.size());
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> robot_gv(num_envs_, robot_gv0.size());
-
-    bolt_gc.row(0) = bolt_gc0.transpose();
-    bolt_gv.row(0) = bolt_gv0.transpose();
-    wrench_gc.row(0) = wrench_gc0.transpose();
-    wrench_gv.row(0) = wrench_gv0.transpose();
-    robot_gc.row(0) = robot_gc0.transpose();
-    robot_gv.row(0) = robot_gv0.transpose();
-
-    for (int i = 1; i < num_envs_; i++) {
-      Eigen::VectorXd bolt_gc_i, bolt_gv_i, wrench_gc_i, wrench_gv_i, robot_gc_i, robot_gv_i;
-      environments_[i]->getDemoState(bolt_gc_i, bolt_gv_i, wrench_gc_i, wrench_gv_i, robot_gc_i, robot_gv_i);
-      bolt_gc.row(i) = bolt_gc_i.transpose();
-      bolt_gv.row(i) = bolt_gv_i.transpose();
-      wrench_gc.row(i) = wrench_gc_i.transpose();
-      wrench_gv.row(i) = wrench_gv_i.transpose();
-      robot_gc.row(i) = robot_gc_i.transpose();
-      robot_gv.row(i) = robot_gv_i.transpose();
-    }
-
-    return std::make_tuple(bolt_gc, bolt_gv, wrench_gc, wrench_gv, robot_gc, robot_gv);
-  }
-
  private:
   void updateObservationStatisticsAndNormalize(Eigen::Ref<EigenRowMajorMat> &ob, bool updateStatistics) {
     if (updateStatistics) {
