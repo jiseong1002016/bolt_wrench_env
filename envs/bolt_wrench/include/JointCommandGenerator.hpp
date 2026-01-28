@@ -11,6 +11,8 @@ struct JointCommand {
   Eigen::Quaterniond base_quat = Eigen::Quaterniond::Identity();
   Eigen::Vector2d q_des = Eigen::Vector2d::Zero();
   Eigen::Vector2d v_des = Eigen::Vector2d::Zero();
+  // Feedforward torques applied via Environment.hpp::tau_total.
+  Eigen::Vector2d tau_ff = Eigen::Vector2d::Zero();
 };
 
 enum class JointCommandMode {
@@ -32,7 +34,9 @@ class JointCommandGenerator {
                         double grasp_approach_duration,
                         double grasp_move_duration,
                         double grasp_rotate_duration,
-                        double grasp_rotate_radius);
+                        double grasp_rotate_radius,
+                        double gf_6,
+                        double gf_13);
 
   void update(JointCommand& command, double sec) const;
 
@@ -58,6 +62,8 @@ class JointCommandGenerator {
   double grasp_move_duration_;
   double grasp_rotate_duration_;
   double grasp_rotate_radius_;
+  double gf_6_;
+  double gf_13_;
 
   // Constants for Range
   const double gc7_min_ = -0.960;

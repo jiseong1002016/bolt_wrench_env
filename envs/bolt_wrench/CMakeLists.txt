@@ -18,6 +18,7 @@ find_package(OpenMP REQUIRED)
 set(src
     UtilityFunctions.cpp
     JointCommandGenerator.cpp
+    rsc/sweep_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../raisim_gym.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Yaml.cpp 
 )

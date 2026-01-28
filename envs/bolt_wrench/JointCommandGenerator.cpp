@@ -12,7 +12,9 @@ JointCommandGenerator::JointCommandGenerator(const Eigen::Vector3d& base_pos,
                                              double grasp_approach_duration,
                                              double grasp_move_duration,
                                              double grasp_rotate_duration,
-                                             double grasp_rotate_radius)
+                                             double grasp_rotate_radius,
+                                             double gf_6,
+                                             double gf_13)
     : base_pos_(base_pos),
       base_quat_(base_quat.normalized()),
       gc7_init_(gc7_init),
@@ -24,7 +26,9 @@ JointCommandGenerator::JointCommandGenerator(const Eigen::Vector3d& base_pos,
       grasp_approach_duration_(grasp_approach_duration),
       grasp_move_duration_(grasp_move_duration),
       grasp_rotate_duration_(grasp_rotate_duration),
-      grasp_rotate_radius_(grasp_rotate_radius) {
+      grasp_rotate_radius_(grasp_rotate_radius),
+      gf_6_(gf_6),
+      gf_13_(gf_13) {
   // GC 7 Range: [-0.960, 0.0] -> Mid: -0.48, Amp: 0.48
   gc7_mid_ = 0.5 * (gc7_min_ + gc7_max_);
   gc7_amp_ = 0.5 * (gc7_max_ - gc7_min_);
@@ -42,6 +46,7 @@ void JointCommandGenerator::update(JointCommand& command,
   // 기본값은 초기 위치로 설정 (안전을 위해)
   command.q_des[0] = gc7_init_;
   command.q_des[1] = gc14_init_;
+  command.tau_ff.setZero();
   // Leave v_des untouched so velocity command is not overridden here.
 
   if (sec < 0.0) {
@@ -65,6 +70,11 @@ void JointCommandGenerator::update(JointCommand& command,
     const double t1 = t0 + grasp_gc14_duration_;
     const double t2 = t1 + grasp_move_duration_;
     const double t3 = t2 + grasp_rotate_duration_;
+    // Apply feedforward torques only during moving and rotating phases.
+    if (sec >= t1 && sec < t3) {
+      command.tau_ff[0] = gf_6_;
+      command.tau_ff[1] = gf_13_;
+    }
     // Hold the base at the reset-aligned pose until the move phase.
     const Eigen::Vector3d base_hold_pos(0.0, -1.26259, 1.034);
     const Eigen::Quaterniond base_hold_quat(1.0, 0.0, 0.0, 0.0);

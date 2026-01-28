@@ -56,4 +56,23 @@ void SetEndEffectorGeneralizedCoordinates(
     double ee_02_right_gc
 );
 
+// LPF for wrench was added here but is currently disabled per request.
+// using Wrench6d = Eigen::Matrix<double, 6, 1>;
+// void lowPassFilterWrench(
+//     const Wrench6d& raw,
+//     Wrench6d& state,
+//     double cutoff_hz,
+//     double dt
+// );
+// void lowPassFilterWrenchSafe(
+//     const Wrench6d& raw,
+//     Wrench6d& state,
+//     double cutoff_hz,
+//     double dt,
+//     double force_limit,
+//     double torque_limit,
+//     double slew_force,
+//     double slew_torque
+// );
+
 #endif // UTILITY_FUNCTIONS_HPP
