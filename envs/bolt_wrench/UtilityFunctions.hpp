@@ -74,6 +74,17 @@ void lowPassFilterWrenchSafe(
     double slew_force,
     double slew_torque
 );
+
+// Smooth, windowed correction used during moving phase.
+Eigen::Vector3d ComputeMovingPhaseCorrection(
+    double now,
+    double t_start,
+    double t_end,
+    const Eigen::Vector3d& wrench_home,
+    const Eigen::Vector3d& wrench_origin,
+    double gain,
+    double max_corr
+);
 // void lowPassFilterWrenchSafe(
 //     const Wrench6d& raw,
 //     Wrench6d& state,

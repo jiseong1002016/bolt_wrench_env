@@ -104,7 +104,9 @@ void JointCommandGenerator::update(JointCommand& command,
       command.q_des[1] = target;
       const double denom = std::max(grasp_move_duration_, 1e-6);
       const double t = (sec - t1) / denom;
-      command.base_pos = base_hold_pos + t * (wrench_home - base_hold_pos);
+      const double t_clamped = std::min(1.0, std::max(0.0, t));
+      const double s = 0.5 - 0.5 * std::cos(M_PI * t_clamped);  // smooth start/end
+      command.base_pos = base_hold_pos + s * (wrench_home - base_hold_pos);
       command.base_quat = base_hold_quat;
       command.has_base_command = true;
       // Apply feedforward torques only during moving and rotating phases.
@@ -116,16 +118,16 @@ void JointCommandGenerator::update(JointCommand& command,
                   << command.base_pos.transpose() << "\n" << std::endl;
       }
     } else if (sec >= t2 && sec < t3) {
-      command.q_des[1] = target;
-      const double denom = std::max(grasp_rotate_duration_, 1e-6);
-      const double t = (sec - t2) / denom;
-      const double theta = 2.0 * M_PI * t;
-      command.base_pos = wrench_home +
-                         Eigen::Vector3d(grasp_rotate_radius_ * std::cos(theta),
-                                         grasp_rotate_radius_ * std::sin(theta),
-                                         0.0);
-      command.base_quat = base_hold_quat;
-      command.has_base_command = true;
+      // command.q_des[1] = target;
+      // const double denom = std::max(grasp_rotate_duration_, 1e-6);
+      // const double t = (sec - t2) / denom;
+      // const double theta = 2.0 * M_PI * t;
+      // command.base_pos = wrench_home +
+      //                    Eigen::Vector3d(grasp_rotate_radius_ * std::cos(theta),
+      //                                    grasp_rotate_radius_ * std::sin(theta),
+      //                                    0.0);
+      // command.base_quat = base_hold_quat;
+      // command.has_base_command = true;
       if (should_print) {
         std::cout << "Rotating around Wrench: "
                   << command.base_pos.transpose() << "\n" << std::endl;

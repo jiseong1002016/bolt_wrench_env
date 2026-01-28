@@ -411,8 +411,8 @@ class ENVIRONMENT : public RaisimGymEnv {
     using Ms = std::chrono::duration<double, std::milli>;
 
     if (server_) {
-      server_->focusOn(end_effector_);
-      // server_->focusOn(wrench_);
+      // server_->focusOn(end_effector_);
+      server_->focusOn(wrench_);
     }
 
     // Timing scaffold for command generation (currently unused; kept for quick profiling).
@@ -497,6 +497,25 @@ class ENVIRONMENT : public RaisimGymEnv {
         const bool has_base = (base_gc_dim == 7 && gc.size() >= 7);
         const bool has_coupled_joints =
             (joint_count >= 8 && gc.size() > idx_gc_14 && gv.size() > idx_gv_14);
+
+        // Moving phase correction based on wrench_home vs current wrench origin.
+        if (command_mode_ == JointCommandMode::kGrasp && joint_command_.has_base_command && has_base) {
+          const double t1 = grasp_approach_duration_ + grasp_gc14_duration_;
+          const double t2 = t1 + grasp_move_duration_;
+          if (now >= t1 && now < t2) {
+            const Eigen::Vector3d wrench_home(0.0, 0.0, 0.1);
+            raisim::Vec<3> wrench_pos_W;
+            wrench_->getFramePosition(wrench_frame_idx_, wrench_pos_W);
+            const Eigen::Vector3d wrench_origin = wrench_pos_W.e();
+            if (should_print) {
+              std::cout << "[step] wrench_origin=" << wrench_origin.transpose() << std::endl;
+            }
+            const double move_corr_gain = 0.5;
+            const double move_corr_max = 0.02;
+            joint_command_.base_pos += ComputeMovingPhaseCorrection(
+                now, t1, t2, wrench_home, wrench_origin, move_corr_gain, move_corr_max);
+          }
+        }
         if (should_print) {
           JointCommandGenerator::ToVector(joint_command_, joint_command_vector_);
           std::cout << std::fixed << std::setprecision(6);

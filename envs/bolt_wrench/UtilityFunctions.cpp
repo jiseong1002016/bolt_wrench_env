@@ -164,3 +164,31 @@ void lowPassFilterWrenchSafe(
     state.head<3>() = f;
     state.tail<3>() = t;
 }
+
+Eigen::Vector3d ComputeMovingPhaseCorrection(
+    double now,
+    double t_start,
+    double t_end,
+    const Eigen::Vector3d& wrench_home,
+    const Eigen::Vector3d& wrench_origin,
+    double gain,
+    double max_corr
+) {
+    if (t_end <= t_start) {
+        return Eigen::Vector3d::Zero();
+    }
+
+    const double t = (now - t_start) / (t_end - t_start);
+    const double t_clamped = std::min(1.0, std::max(0.0, t));
+    const double s = 0.5 - 0.5 * std::cos(M_PI * t_clamped);  // smooth start/end
+
+    Eigen::Vector3d err = wrench_home - wrench_origin;
+    err.z() = 0.0;  // no z correction
+
+    Eigen::Vector3d corr = gain * s * err;
+    const double corr_norm = corr.norm();
+    if (corr_norm > max_corr && corr_norm > 1e-12) {
+        corr = corr * (max_corr / corr_norm);
+    }
+    return corr;
+}

@@ -137,19 +137,28 @@
     <collision>
       <origin xyz="0 0 0.004" rpy="0 0 0.5236" /> 
       <geometry>
-        <box size="0.0219 0.011 0.008" />
+        <!-- <box size="0.0219 0.011 0.008" />     -->
+        <!-- <box size="0.0200 0.0100 0.008" /> -->
+        <!-- <box size="0.0180 0.0090 0.008" /> -->
+        <box size="0.0160 0.0080 0.008" />
       </geometry>
     </collision>
     <collision>
       <origin xyz="0 0 0.004" rpy="0 0 1.5708" /> 
       <geometry>
-        <box size="0.0219 0.011 0.008" />
+        <!-- <box size="0.0219 0.011 0.008" /> -->
+        <!-- <box size="0.0200 0.0100 0.008" /> -->
+        <!-- <box size="0.0180 0.0090 0.008" /> -->
+        <box size="0.0160 0.0080 0.008" />
       </geometry>
     </collision>
     <collision>
       <origin xyz="0 0 0.004" rpy="0 0 -0.5236" /> 
       <geometry>
-        <box size="0.0219 0.011 0.008" />
+        <!-- <box size="0.0219 0.011 0.008" /> -->
+        <!-- <box size="0.0200 0.0100 0.008" /> -->
+        <!-- <box size="0.0180 0.0090 0.008" /> -->
+        <box size="0.0160 0.0080 0.008" />
       </geometry>
     </collision>
     <collision>
