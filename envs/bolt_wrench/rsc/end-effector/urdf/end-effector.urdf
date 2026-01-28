@@ -8,7 +8,7 @@
     name="ee_base">
     <inertial>
       <origin
-        xyz="0.0031143 -0.020214 -0.0028409"
+        xyz="0.0031143 0.052786 -0.00014093"
         rpy="0 0 0" />
       <mass
         value="0.47995" />
@@ -44,18 +44,18 @@
       </geometry>
     </collision> -->
   </link>
-  <!-- <joint
-    name="ee_02_right"
+  <!-- <joint        RAIPAL URDF 에 사용
+    name="ee_base"
     type="revolute">
     <origin
-      xyz="0 0 0"
-      rpy="0 0 0" />
+      xyz="0 0 0.027"
+      rpy="3.14159265359 1.5707963267949 0" />
     <parent
-      link="ee_base" />
+      link="L_ee" />
     <child
-      link="ee_2_right" />
+      link="ee_base" />
     <axis
-      xyz="0 0 -1" />
+      xyz="1 0 0" />
     <limit
       lower="-0.96"
       upper="0"
@@ -106,7 +106,7 @@
     name="ee_01_left"
     type="revolute">
     <origin
-      xyz="-0.027 0 0"
+      xyz="-0.027 0.073 0.0027"
       rpy="0 0 -0.349065850398886" />
     <parent
       link="ee_base" />
@@ -296,7 +296,7 @@
     name="ee_02_left"
     type="revolute">
     <origin
-      xyz="-0.027 0 0"
+      xyz="-0.027 0.073 0.0027"
       rpy="0 0 0" />
     <parent
       link="ee_base" />
@@ -354,7 +354,7 @@
     name="ee_01_right"
     type="revolute">
     <origin
-      xyz="0.027 0 0"
+      xyz="0.027 0.073 0.0027"
       rpy="0 0 0.349065850398886" />
     <parent
       link="ee_base" />
@@ -544,7 +544,7 @@
     name="ee_02_right"
     type="revolute">
     <origin
-      xyz="0.027 0 0"
+      xyz="0.027 0.073 0.0027"
       rpy="0 0 0" />
     <parent
       link="ee_base" />
