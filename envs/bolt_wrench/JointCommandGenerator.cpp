@@ -42,6 +42,8 @@ void JointCommandGenerator::update(JointCommand& command,
                                    double sec) const {
   command.base_pos = base_pos_;
   command.base_quat = base_quat_;
+  command.has_base_command = false;
+  command.has_tau_ff = false;
 
   // 기본값은 초기 위치로 설정 (안전을 위해)
   command.q_des[0] = gc7_init_;
@@ -70,19 +72,16 @@ void JointCommandGenerator::update(JointCommand& command,
     const double t1 = t0 + grasp_gc14_duration_;
     const double t2 = t1 + grasp_move_duration_;
     const double t3 = t2 + grasp_rotate_duration_;
-    // Apply feedforward torques only during moving and rotating phases.
-    if (sec >= t1 && sec < t3) {
-      command.tau_ff[0] = gf_6_;
-      command.tau_ff[1] = gf_13_;
-    }
+    
     // Hold the base at the reset-aligned pose until the move phase.
-    const Eigen::Vector3d base_hold_pos(0.0, -1.26259, 1.034);
+    const Eigen::Vector3d base_hold_pos(0.0, -1.33559, 1.0313); // (0.0, -1.26259, 1.034);
     const Eigen::Quaterniond base_hold_quat(1.0, 0.0, 0.0, 0.0);
     const Eigen::Vector3d wrench_origin(0.0, 0.0, 0.034);
     if (sec >= 0.0 && sec < grasp_approach_duration_) {
       command.q_des[1] = start;
       command.base_pos = base_hold_pos;
       command.base_quat = base_hold_quat;
+      command.has_base_command = true;
       if (should_print) {
         std::cout << "Approaching for Grasping...\n" << std::endl;
       }
@@ -93,6 +92,11 @@ void JointCommandGenerator::update(JointCommand& command,
       command.q_des[1] = start + t * (target - start);
       command.base_pos = base_hold_pos;
       command.base_quat = base_hold_quat;
+      command.has_base_command = true;
+      // Apply feedforward torques only during moving and rotating phases.
+      command.tau_ff[0] = gf_6_;
+      command.tau_ff[1] = gf_13_;
+      command.has_tau_ff = true;
       if (should_print) {
         std::cout << "Grasping... GC14: " << command.q_des[1] << "\n" << std::endl;
       }
@@ -101,6 +105,12 @@ void JointCommandGenerator::update(JointCommand& command,
       const double denom = std::max(grasp_move_duration_, 1e-6);
       const double t = (sec - t1) / denom;
       command.base_pos = base_hold_pos + t * (wrench_origin - base_hold_pos);
+      command.base_quat = base_hold_quat;
+      command.has_base_command = true;
+      // Apply feedforward torques only during moving and rotating phases.
+      command.tau_ff[0] = gf_6_;
+      command.tau_ff[1] = gf_13_;
+      command.has_tau_ff = true;
       if (should_print) {
         std::cout << "Moving to Wrench Position: "
                   << command.base_pos.transpose() << "\n" << std::endl;
@@ -114,6 +124,8 @@ void JointCommandGenerator::update(JointCommand& command,
                          Eigen::Vector3d(grasp_rotate_radius_ * std::cos(theta),
                                          grasp_rotate_radius_ * std::sin(theta),
                                          0.0);
+      command.base_quat = base_hold_quat;
+      command.has_base_command = true;
       if (should_print) {
         std::cout << "Rotating around Wrench: "
                   << command.base_pos.transpose() << "\n" << std::endl;
@@ -122,6 +134,8 @@ void JointCommandGenerator::update(JointCommand& command,
       command.q_des[1] = target;
       command.base_pos = wrench_origin +
                          Eigen::Vector3d(grasp_rotate_radius_, 0.0, 0.0);
+      command.base_quat = base_hold_quat;
+      command.has_base_command = true;
       if (should_print) {
         std::cout << "Grasping Sequence Completed. Holding Position.\n" << std::endl;
       }
@@ -157,6 +171,8 @@ void JointCommandGenerator::FromVector(
     command = JointCommand();
     return;
   }
+  command.has_base_command = false;
+  command.has_tau_ff = false;
   command.base_pos = vec.segment<3>(0);
   command.base_quat = Eigen::Quaterniond(vec[3], vec[4], vec[5], vec[6]);
   command.base_quat.normalize();

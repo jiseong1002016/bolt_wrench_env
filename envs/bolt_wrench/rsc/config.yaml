@@ -20,8 +20,8 @@ environment:
   gravity_compensation: true
 
   # Gains (current) - if simulation_dt increases, scale kp ~ 1/dt^2 and kd ~ 1/dt.
-  active_kp: 0.1  # Environment.hpp: joint PD gains (idx_gv_7/14)
-  active_kd: 0.05  # Environment.hpp: joint PD gains (idx_gv_7/14)
+  active_kp: 1000 #0.1  # Environment.hpp: joint PD gains (idx_gv_7/14)
+  active_kd: 500 #0.05  # Environment.hpp: joint PD gains (idx_gv_7/14)
   base_force_pos_kp: 1000.0  #10000.0 # Environment.hpp: external force PD (position)
   base_force_pos_kd: 500.0   #1000.0 # Environment.hpp: external force PD (position)
   base_force_pos_ki: 1000.0    # Environment.hpp: external force PI(D) (position)
@@ -30,8 +30,8 @@ environment:
   base_force_rot_kd: 1.0   # Environment.hpp: external torque PD (rotation)
   base_force_rot_ki: 100.0   # Environment.hpp: external torque PI(D) (rotation)
   base_force_rot_i_max: 5.0 # Environment.hpp: clamp for rotation integral term
-  base_force_max: 40.0     # Environment.hpp: cap on external base force
-  base_torque_max: 20.0    # Environment.hpp: cap on external base torque
+  base_force_max: 4000.0     # Environment.hpp: cap on external base force
+  base_torque_max: 2000.0    # Environment.hpp: cap on external base torque
   base_wrench_lpf_cutoff_hz: 15.0   # UtilityFunctions: wrench LPF cutoff
   base_wrench_slew_force: 200.0     # UtilityFunctions: wrench slew limit (N/s)
   base_wrench_slew_torque: 200.0    # UtilityFunctions: wrench slew limit (Nm/s)
@@ -48,14 +48,14 @@ environment:
   command_mode: grasp  # sine | grasp
   grasp_gc14_start: 0.6
   grasp_gc14_target: 0.133 # 0.1337
-  grasp_approach_duration: 3.0
-  grasp_gc14_duration: 3.0
+  grasp_approach_duration: 4.0
+  grasp_gc14_duration: 4.0
   grasp_move_duration: 10.0
   grasp_rotate_duration: 5.0
   grasp_rotate_radius: 0.5
   # Feedforward torques applied via tau_total during grasp (t < t3)
-  gf_6: 1.0
-  gf_13: -1.0
+  gf_6: 100.0
+  gf_13: -100.0
   
   # [사용자님의 커스텀 파라미터 추가]
   thread_pitch: 0.01     # 기존 값 0.01 적용

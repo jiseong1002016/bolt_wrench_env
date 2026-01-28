@@ -3,6 +3,7 @@
 #include <cmath>
 #include <chrono>
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <iostream>
 #if defined(__linux__) || defined(__APPLE__)
@@ -102,6 +103,21 @@ class ENVIRONMENT : public RaisimGymEnv {
     }
     if (&cfg["grasp_rotate_radius"]) {
       grasp_rotate_radius_ = cfg["grasp_rotate_radius"].template As<double>();
+    }
+    if (&cfg["base_wrench_lpf_cutoff_hz"]) {
+      base_wrench_lpf_cutoff_hz_ = cfg["base_wrench_lpf_cutoff_hz"].template As<double>();
+    }
+    if (&cfg["base_wrench_slew_force"]) {
+      base_wrench_slew_force_ = cfg["base_wrench_slew_force"].template As<double>();
+    }
+    if (&cfg["base_wrench_slew_torque"]) {
+      base_wrench_slew_torque_ = cfg["base_wrench_slew_torque"].template As<double>();
+    }
+    if (&cfg["gf_6"]) {
+      gf_6_ = cfg["gf_6"].template As<double>();
+    }
+    if (&cfg["gf_13"]) {
+      gf_13_ = cfg["gf_13"].template As<double>();
     }
     if (&cfg["gravity_compensation"]) {
       gravity_compensation_ = cfg["gravity_compensation"].template As<bool>();
@@ -278,7 +294,9 @@ class ENVIRONMENT : public RaisimGymEnv {
           grasp_approach_duration_,
           grasp_move_duration_,
           grasp_rotate_duration_,
-          grasp_rotate_radius_);
+          grasp_rotate_radius_,
+          gf_6_,
+          gf_13_);
       joint_command_vector_.setZero(JointCommandGenerator::kCommandDim);
       if (server_) {
         joint_command_vis_.setZero(static_cast<size_t>(joint_command_vector_.size()));
@@ -407,14 +425,16 @@ class ENVIRONMENT : public RaisimGymEnv {
     const int base_gc_dim = (gcDim_ == gvDim_ + 1) ? 7 : 0;
     const int joint_count = gcDim_ - base_gc_dim;
     const double now = world_->getWorldTime();
-    const double base_force_enable_time =
-        grasp_approach_duration_ + grasp_gc14_duration_;
+    const double base_force_enable_time = 0.0;
     const bool base_force_enabled = (now >= base_force_enable_time);
     const bool can_use_action_command =
         use_action_command_ &&
         action_command.size() >= JointCommandGenerator::kCommandDim;
     const bool can_use_generator = static_cast<bool>(joint_command_generator_);
     const bool has_command = can_use_action_command || can_use_generator;
+    joint_command_.has_base_command = false;
+    // Ensure base DOF generalized force starts at zero (avoid garbage values in debug prints).
+    end_effector_->setGeneralizedForce(Eigen::VectorXd::Zero(gvDim_));
 
     if (can_use_action_command) {  // 제어기 쓸 때 @ runner.py
       JointCommandGenerator::FromVector(
@@ -422,6 +442,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     } else if (can_use_generator) {   // 데모 만들 때 @ demo_generator.py
       joint_command_generator_->update(joint_command_, now);
     }
+    // LPF for PD targets is applied right before setPdTarget().
     // const auto command_end = Clock::now();
     // [role] command_start/command_end were used to profile command generation latency.
     // std::cout << "[step] command_gen_ms="
@@ -460,20 +481,26 @@ class ENVIRONMENT : public RaisimGymEnv {
       const auto& gc = end_effector_->getGeneralizedCoordinate();
       const auto& gv = end_effector_->getGeneralizedVelocity();
       if (has_command) {
+        Eigen::Vector3d base_pd_pos_before = Eigen::Vector3d::Zero();
+        Eigen::Vector3d base_pd_vel_before = Eigen::Vector3d::Zero();
+        Eigen::Vector3d base_pd_pos_after = Eigen::Vector3d::Zero();
+        Eigen::Vector3d base_pd_vel_after = Eigen::Vector3d::Zero();
+        bool base_pd_lpf_active = false;
+        const bool should_print =
+            (last_debug_print_time_ < 0.0 || now - last_debug_print_time_ >= 0.5);
+        if (should_print) {
+          last_debug_print_time_ = now;
+        }
         pd_target_pos_ = gc.e();
         pd_target_vel_ = gv.e();
         const bool has_base = (base_gc_dim == 7 && gc.size() >= 7);
         const bool has_coupled_joints =
             (joint_count >= 8 && gc.size() > idx_gc_14 && gv.size() > idx_gv_14);
-
-        if (has_base) {
-          // Debug print once per second instead of every step.
-          if (last_debug_print_time_ < 0.0 || now - last_debug_print_time_ >= 0.5) {
-            last_debug_print_time_ = now;
-            JointCommandGenerator::ToVector(joint_command_, joint_command_vector_);
-            std::cout << std::fixed << std::setprecision(6);
-            std::cout << "[step] t=" << std::setw(9) << now << " joint_command=\n"
-                      << joint_command_vector_.transpose() << std::endl;
+        if (should_print) {
+          JointCommandGenerator::ToVector(joint_command_, joint_command_vector_);
+          std::cout << std::fixed << std::setprecision(6);
+          std::cout << "[step] t=" << std::setw(9) << now << " joint_command=\n"
+                    << joint_command_vector_.transpose() << std::endl;
             const Eigen::Vector3d base_pos_now(gc[0], gc[1], gc[2]);
             const Eigen::Quaterniond base_quat_now(gc[3], gc[4], gc[5], gc[6]);
             std::cout << "[step] base_pos=\n" << std::setw(10) << base_pos_now.x()
@@ -483,7 +510,19 @@ class ENVIRONMENT : public RaisimGymEnv {
                       << " " << std::setw(10) << base_quat_now.x() << " "
                       << std::setw(10) << base_quat_now.y() << " "
                       << std::setw(10) << base_quat_now.z() << std::endl;
+            const auto gf = end_effector_->getGeneralizedForce().e();
+            const int base_force_dim = std::min(6, static_cast<int>(gf.size()));
+            if (base_force_dim > 0) {
+              std::cout << "[step] base_pd_enabled=" << std::boolalpha
+                        << (joint_command_.has_base_command && has_base)
+                        << " base_force_enabled=" << base_force_enabled
+                        << " base_generalized_force=" << gf.head(base_force_dim).transpose()
+                        << std::noboolalpha << std::endl;
+            }
           }
+
+        if (has_base && joint_command_.has_base_command) {
+          // Debug print once per second instead of every step.
           pd_target_pos_[0] = joint_command_.base_pos.x();
           pd_target_pos_[1] = joint_command_.base_pos.y();
           pd_target_pos_[2] = joint_command_.base_pos.z();
@@ -503,7 +542,56 @@ class ENVIRONMENT : public RaisimGymEnv {
           pd_target_vel_[idx_gv_7] = joint_command_.v_des[0];
           pd_target_vel_[idx_gv_14] = joint_command_.v_des[1];
         }
+        // === LPF START (base_wrench_lpf_cutoff_hz, dt = simulation_dt_) ===
+        if (base_wrench_lpf_cutoff_hz_ > 0.0 && has_base) {
+          base_pd_lpf_active = true;
+          base_pd_pos_before = pd_target_pos_.head<3>();
+          if (base_vel_dim >= 3 && pd_target_vel_.size() >= 3) {
+            base_pd_vel_before = pd_target_vel_.head<3>();
+          }
+          Wrench6d base_pd_raw = Wrench6d::Zero();
+          base_pd_raw.head<3>() = pd_target_pos_.head<3>();
+          if (base_vel_dim >= 3 && pd_target_vel_.size() >= 3) {
+            base_pd_raw.tail<3>() = pd_target_vel_.head<3>();
+          }
+          if (!base_pd_lpf_initialized_) {
+            base_pd_lpf_state_ = base_pd_raw;
+            base_pd_lpf_initialized_ = true;
+          }
+          lowPassFilterWrenchSafe(
+              base_pd_raw,
+              base_pd_lpf_state_,
+              base_wrench_lpf_cutoff_hz_,
+              simulation_dt_,
+              base_force_max_,
+              base_torque_max_,
+              base_wrench_slew_force_,
+              base_wrench_slew_torque_);
+          pd_target_pos_.head<3>() = base_pd_lpf_state_.head<3>();
+          if (base_vel_dim >= 3 && pd_target_vel_.size() >= 3) {
+            pd_target_vel_.head<3>() = base_pd_lpf_state_.tail<3>();
+          }
+          base_pd_pos_after = pd_target_pos_.head<3>();
+          if (base_vel_dim >= 3 && pd_target_vel_.size() >= 3) {
+            base_pd_vel_after = pd_target_vel_.head<3>();
+          }
+        }
+        // === LPF END ===
         end_effector_->setPdTarget(pd_target_pos_, pd_target_vel_);
+        if (should_print && base_pd_lpf_active) {
+          std::cout << "[step] base_pd_lpf_pos_before=" << base_pd_pos_before.transpose()
+                    << " base_pd_lpf_pos_after=" << base_pd_pos_after.transpose()
+                    << "\n[step] base_pd_lpf_vel_before=" << base_pd_vel_before.transpose()
+                    << " base_pd_lpf_vel_after=" << base_pd_vel_after.transpose()
+                    << std::endl;
+        }
+      }
+
+      // Apply feedforward torques from the command during grasp phases.
+      if (has_command && joint_command_.has_tau_ff && joint_count >= 8 &&
+          gv.size() > idx_gv_14) {
+        tau_total[idx_gv_7] += joint_command_.tau_ff[0];
+        tau_total[idx_gv_14] += joint_command_.tau_ff[1];
       }
 
       // Gear Coupling Logic
@@ -523,6 +611,7 @@ class ENVIRONMENT : public RaisimGymEnv {
           tau_total[idx_gv_14] += tau_gear2;
         }
       }
+
       // ---------------------------------------------------------
       // Gravity compensation (toggle in config.yaml)
       // ---------------------------------------------------------
@@ -540,7 +629,7 @@ class ENVIRONMENT : public RaisimGymEnv {
         }
       }
       // Pull the floating base toward the commanded pose using external force/torque.
-      if (has_command && base_force_enabled && base_gc_dim == 7 &&
+      if (has_command && joint_command_.has_base_command && base_force_enabled && base_gc_dim == 7 &&
           static_cast<size_t>(base_body_idx_) < ee_body_masses_.size() &&
           gc.size() >= 7 && gv.size() >= 6) {
         const Eigen::Vector3d base_pos(gc[0], gc[1], gc[2]);
@@ -717,6 +806,17 @@ class ENVIRONMENT : public RaisimGymEnv {
     robot_gv = end_effector_->getGeneralizedVelocity().e();
   }
 
+  std::vector<std::array<double, 4>> runFtPdSweep(double dt_min,
+                                                  double dt_max,
+                                                  double dt_step,
+                                                  double cutoff_min,
+                                                  double cutoff_max,
+                                                  double cutoff_step,
+                                                  double sample_time,
+                                                  int num_samples,
+                                                  bool random_dt_step,
+                                                  const std::string& urdf_type) const;
+
  private:
   raisim::ArticulatedSystem* bolt_;
   raisim::ArticulatedSystem* wrench_;
@@ -750,6 +850,11 @@ class ENVIRONMENT : public RaisimGymEnv {
   double grasp_move_duration_ = 1.0;
   double grasp_rotate_duration_ = 2.0;
   double grasp_rotate_radius_ = 0.5;
+  double base_wrench_lpf_cutoff_hz_ = 0.0;
+  double base_wrench_slew_force_ = 0.0;
+  double base_wrench_slew_torque_ = 0.0;
+  double gf_6_ = 0.0;
+  double gf_13_ = 0.0;
 
   std::string ee_frame_name_ = "ee_base";
   std::vector<double> ee_body_masses_;
@@ -776,6 +881,8 @@ class ENVIRONMENT : public RaisimGymEnv {
   raisim::TimeSeriesGraph* joint_command_graph_ = nullptr;
   raisim::VecDyn joint_command_vis_;
   JointCommand joint_command_;
+  Wrench6d base_pd_lpf_state_;
+  bool base_pd_lpf_initialized_ = false;
   Eigen::VectorXd joint_command_vector_;
   Eigen::VectorXd pd_target_pos_;
   Eigen::VectorXd pd_target_vel_;

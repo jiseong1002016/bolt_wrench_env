@@ -100,10 +100,24 @@ CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.s"
 	/usr/bin/g++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/JointCommandGenerator.cpp -o CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.s
 
+CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o: CMakeFiles/bolt_wrench.dir/flags.make
+CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o: /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/rsc/sweep_test.cpp
+CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o: CMakeFiles/bolt_wrench.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o"
+	/usr/bin/g++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o -MF CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o.d -o CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o -c /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/rsc/sweep_test.cpp
+
+CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.i"
+	/usr/bin/g++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/rsc/sweep_test.cpp > CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.i
+
+CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.s"
+	/usr/bin/g++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/rsc/sweep_test.cpp -o CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.s
+
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o: CMakeFiles/bolt_wrench.dir/flags.make
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o: /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o: CMakeFiles/bolt_wrench.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o"
 	/usr/bin/g++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o -MF CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o.d -o CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o -c /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp
 
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.i: cmake_force
@@ -117,7 +131,7 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o: CMakeFiles/bolt_wrench.dir/flags.make
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o: /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o: CMakeFiles/bolt_wrench.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o"
 	/usr/bin/g++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o -MF CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o.d -o CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o -c /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp
 
 CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.i: cmake_force
@@ -132,6 +146,7 @@ CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisi
 bolt_wrench_OBJECTS = \
 "CMakeFiles/bolt_wrench.dir/UtilityFunctions.cpp.o" \
 "CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.o" \
+"CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o" \
 "CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o" \
 "CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o"
 
@@ -140,6 +155,7 @@ bolt_wrench_EXTERNAL_OBJECTS =
 
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/UtilityFunctions.cpp.o
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/JointCommandGenerator.cpp.o
+bolt_wrench.so: CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/build.make
@@ -151,7 +167,7 @@ bolt_wrench.so: /home/Jiseong/raisim_ws/raisimlib/raisim/linux/lib/libraisimMine
 bolt_wrench.so: /usr/lib/gcc/x86_64-linux-gnu/12/libgomp.so
 bolt_wrench.so: /usr/lib/x86_64-linux-gnu/libpthread.a
 bolt_wrench.so: CMakeFiles/bolt_wrench.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX shared library bolt_wrench.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX shared library bolt_wrench.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/bolt_wrench.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

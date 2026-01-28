@@ -86,82 +86,81 @@ void SetEndEffectorGeneralizedCoordinates(
     end_effector->setGeneralizedCoordinate(positions);
 }
 
-// Wrench LPF implementation is currently disabled per request.
-// void lowPassFilterWrench(
-//     const Wrench6d& raw,
-//     Wrench6d& state,
-//     double cutoff_hz,
-//     double dt
-// ) {
-//     cutoff_hz = std::max(0.0, cutoff_hz);
-//     dt = std::max(0.0, dt);
+void lowPassFilterWrench(
+    const Wrench6d& raw,
+    Wrench6d& state,
+    double cutoff_hz,
+    double dt
+) {
+    cutoff_hz = std::max(0.0, cutoff_hz);
+    dt = std::max(0.0, dt);
+
+    if (cutoff_hz <= 0.0 || dt <= 0.0) {
+        state = raw;
+        return;
+    }
+
+    const double omega_c = 2.0 * M_PI * cutoff_hz;
+    const double alpha = (omega_c * dt) / (omega_c * dt + 1.0);
+    state = alpha * raw + (1.0 - alpha) * state;
+}
 //
-//     if (cutoff_hz <= 0.0 || dt <= 0.0) {
-//         state = raw;
-//         return;
-//     }
-//
-//     const double omega_c = 2.0 * M_PI * cutoff_hz;
-//     const double alpha = (omega_c * dt) / (omega_c * dt + 1.0);
-//     state = alpha * raw + (1.0 - alpha) * state;
-// }
-//
-// namespace {
-//
-// inline Eigen::Vector3d clampNorm(const Eigen::Vector3d& v, double limit) {
-//     if (limit <= 0.0) {
-//         return v;
-//     }
-//     const double n = v.norm();
-//     if (n <= limit || n <= 1e-12) {
-//         return v;
-//     }
-//     return v * (limit / n);
-// }
-//
-// inline Eigen::Vector3d slewLimit(
-//     const Eigen::Vector3d& prev,
-//     const Eigen::Vector3d& next,
-//     double max_rate,
-//     double dt
-// ) {
-//     if (max_rate <= 0.0 || dt <= 0.0) {
-//         return next;
-//     }
-//     const Eigen::Vector3d delta = next - prev;
-//     const double max_delta = max_rate * dt;
-//     const double delta_norm = delta.norm();
-//     if (delta_norm <= max_delta || delta_norm <= 1e-12) {
-//         return next;
-//     }
-//     return prev + delta * (max_delta / delta_norm);
-// }
-//
-// } // namespace
-//
-// void lowPassFilterWrenchSafe(
-//     const Wrench6d& raw,
-//     Wrench6d& state,
-//     double cutoff_hz,
-//     double dt,
-//     double force_limit,
-//     double torque_limit,
-//     double slew_force,
-//     double slew_torque
-// ) {
-//     Wrench6d raw_clamped = raw;
-//     raw_clamped.head<3>() = clampNorm(raw_clamped.head<3>(), force_limit);
-//     raw_clamped.tail<3>() = clampNorm(raw_clamped.tail<3>(), torque_limit);
-//
-//     const Wrench6d prev_state = state;
-//     lowPassFilterWrench(raw_clamped, state, cutoff_hz, dt);
-//
-//     Eigen::Vector3d f = slewLimit(prev_state.head<3>(), state.head<3>(), slew_force, dt);
-//     Eigen::Vector3d t = slewLimit(prev_state.tail<3>(), state.tail<3>(), slew_torque, dt);
-//
-//     f = clampNorm(f, force_limit);
-//     t = clampNorm(t, torque_limit);
-//
-//     state.head<3>() = f;
-//     state.tail<3>() = t;
-// }
+namespace {
+
+inline Eigen::Vector3d clampNorm(const Eigen::Vector3d& v, double limit) {
+    if (limit <= 0.0) {
+        return v;
+    }
+    const double n = v.norm();
+    if (n <= limit || n <= 1e-12) {
+        return v;
+    }
+    return v * (limit / n);
+}
+
+inline Eigen::Vector3d slewLimit(
+    const Eigen::Vector3d& prev,
+    const Eigen::Vector3d& next,
+    double max_rate,
+    double dt
+) {
+    if (max_rate <= 0.0 || dt <= 0.0) {
+        return next;
+    }
+    const Eigen::Vector3d delta = next - prev;
+    const double max_delta = max_rate * dt;
+    const double delta_norm = delta.norm();
+    if (delta_norm <= max_delta || delta_norm <= 1e-12) {
+        return next;
+    }
+    return prev + delta * (max_delta / delta_norm);
+}
+
+} // namespace
+
+void lowPassFilterWrenchSafe(
+    const Wrench6d& raw,
+    Wrench6d& state,
+    double cutoff_hz,
+    double dt,
+    double force_limit,
+    double torque_limit,
+    double slew_force,
+    double slew_torque
+) {
+    Wrench6d raw_clamped = raw;
+    raw_clamped.head<3>() = clampNorm(raw_clamped.head<3>(), force_limit);
+    raw_clamped.tail<3>() = clampNorm(raw_clamped.tail<3>(), torque_limit);
+
+    const Wrench6d prev_state = state;
+    lowPassFilterWrench(raw_clamped, state, cutoff_hz, dt);
+
+    Eigen::Vector3d f = slewLimit(prev_state.head<3>(), state.head<3>(), slew_force, dt);
+    Eigen::Vector3d t = slewLimit(prev_state.tail<3>(), state.tail<3>(), slew_torque, dt);
+
+    f = clampNorm(f, force_limit);
+    t = clampNorm(t, torque_limit);
+
+    state.head<3>() = f;
+    state.tail<3>() = t;
+}

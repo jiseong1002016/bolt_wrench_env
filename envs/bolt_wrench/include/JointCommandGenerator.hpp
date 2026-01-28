@@ -13,6 +13,8 @@ struct JointCommand {
   Eigen::Vector2d v_des = Eigen::Vector2d::Zero();
   // Feedforward torques applied via Environment.hpp::tau_total.
   Eigen::Vector2d tau_ff = Eigen::Vector2d::Zero();
+  bool has_base_command = false;
+  bool has_tau_ff = false;
 };
 
 enum class JointCommandMode {

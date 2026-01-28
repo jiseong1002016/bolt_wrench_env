@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/Yaml.cpp.o.d"
   "CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o"
   "CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.o.d"
+  "CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o"
+  "CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o.d"
   "bolt_wrench.pdb"
   "bolt_wrench.so"
 )

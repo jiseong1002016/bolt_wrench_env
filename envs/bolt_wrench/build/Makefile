@@ -225,6 +225,30 @@ home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cp
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.s
 .PHONY : home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.cpp.s
 
+rsc/sweep_test.o: rsc/sweep_test.cpp.o
+.PHONY : rsc/sweep_test.o
+
+# target to build an object file
+rsc/sweep_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.o
+.PHONY : rsc/sweep_test.cpp.o
+
+rsc/sweep_test.i: rsc/sweep_test.cpp.i
+.PHONY : rsc/sweep_test.i
+
+# target to preprocess a source file
+rsc/sweep_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.i
+.PHONY : rsc/sweep_test.cpp.i
+
+rsc/sweep_test.s: rsc/sweep_test.cpp.s
+.PHONY : rsc/sweep_test.s
+
+# target to generate assembly for a file
+rsc/sweep_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bolt_wrench.dir/build.make CMakeFiles/bolt_wrench.dir/rsc/sweep_test.cpp.s
+.PHONY : rsc/sweep_test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -246,6 +270,9 @@ help:
 	@echo "... home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.o"
 	@echo "... home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.i"
 	@echo "... home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/raisim_gym.s"
+	@echo "... rsc/sweep_test.o"
+	@echo "... rsc/sweep_test.i"
+	@echo "... rsc/sweep_test.s"
 .PHONY : help
 
 
