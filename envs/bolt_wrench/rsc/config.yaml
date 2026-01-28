@@ -15,7 +15,6 @@ environment:
   # NOTE: If simulation_dt increases, scale kp ~ 1/dt^2 and kd ~ 1/dt for stability.
   simulation_dt: 0.00125 # recommended: 0.0012~0.0014 (Environment.hpp: world_->setTimeStep)
   control_dt: 0.01 # 0.01 (Environment.hpp: control_dt_ loop)
-  state_lpf_cutoff_hz: 15.0 # recommended: 10~20 Hz (Environment.hpp: state LPF)
   max_total_steps: 200000  # runner.py: max_updates, demo_generator.py: episode_steps default
   gravity_compensation: true
 
@@ -23,19 +22,19 @@ environment:
   active_kp: 1000 #0.1  # Environment.hpp: joint PD gains (idx_gv_7/14)
   active_kd: 500 #0.05  # Environment.hpp: joint PD gains (idx_gv_7/14)
   base_force_pos_kp: 1000.0  #10000.0 # Environment.hpp: external force PD (position)
-  base_force_pos_kd: 500.0   #1000.0 # Environment.hpp: external force PD (position)
-  base_force_pos_ki: 1000.0    # Environment.hpp: external force PI(D) (position)
+  base_force_pos_kd: 50.0   #1000.0 # Environment.hpp: external force PD (position)
+  base_force_pos_ki: 100.0    # Environment.hpp: external force PI(D) (position)
   base_force_pos_i_max: 5.0 # Environment.hpp: clamp for position integral term
   base_force_rot_kp: 10.0  # Environment.hpp: external torque PD (rotation)
   base_force_rot_kd: 1.0   # Environment.hpp: external torque PD (rotation)
   base_force_rot_ki: 100.0   # Environment.hpp: external torque PI(D) (rotation)
   base_force_rot_i_max: 5.0 # Environment.hpp: clamp for rotation integral term
-  base_force_max: 4000.0     # Environment.hpp: cap on external base force
-  base_torque_max: 2000.0    # Environment.hpp: cap on external base torque
-  base_wrench_lpf_cutoff_hz: 15.0   # UtilityFunctions: wrench LPF cutoff
+  base_force_max: 400.0     # Environment.hpp: cap on external base force
+  base_torque_max: 200.0    # Environment.hpp: cap on external base torque
+  state_lpf_cutoff_hz: 15.0 # recommended: 10~20 Hz (Environment.hpp: state LPF)
   base_wrench_slew_force: 200.0     # UtilityFunctions: wrench slew limit (N/s)
   base_wrench_slew_torque: 200.0    # UtilityFunctions: wrench slew limit (Nm/s)
-  kp_gear: 10.0 # Environment.hpp: gear coupling torque
+  kp_gear: 100.0 # Environment.hpp: gear coupling torque
   kd_gear: 0.1    # Environment.hpp: gear coupling torque
 
 
@@ -54,8 +53,8 @@ environment:
   grasp_rotate_duration: 5.0
   grasp_rotate_radius: 0.5
   # Feedforward torques applied via tau_total during grasp (t < t3)
-  gf_6: 100.0
-  gf_13: -100.0
+  gf_6: 20.0
+  gf_13: -20.0
   
   # [사용자님의 커스텀 파라미터 추가]
   thread_pitch: 0.01     # 기존 값 0.01 적용

@@ -82,9 +82,9 @@ void JointCommandGenerator::update(JointCommand& command,
       command.base_pos = base_hold_pos;
       command.base_quat = base_hold_quat;
       command.has_base_command = true;
-      if (should_print) {
-        std::cout << "Approaching for Grasping...\n" << std::endl;
-      }
+      // if (should_print) {
+      //   std::cout << "Approaching for Grasping...\n" << std::endl;
+      // }
     } else if (sec >= grasp_approach_duration_ &&
                sec < grasp_approach_duration_ + grasp_gc14_duration_) {
       const double denom = std::max(grasp_gc14_duration_, 1e-6);

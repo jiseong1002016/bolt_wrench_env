@@ -253,13 +253,13 @@ class ENVIRONMENT : public RaisimGymEnv {
       static bool printed_dims_once = false;
       if (!printed_dims_once) {
         printed_dims_once = true;
-        std::cout << "[dims] gcDim=" << gcDim_
-                  << " gvDim=" << gvDim_
-                  << " base_gc_dim=" << base_gc_dim
-                  << " base_vel_dim=" << base_vel_dim
-                  << " joint_count=" << joint_count
-                  << " floating_base=" << (base_gc_dim == 7 ? "true" : "false")
-                  << std::endl;
+        // std::cout << "[dims] gcDim=" << gcDim_
+        //           << " gvDim=" << gvDim_
+        //           << " base_gc_dim=" << base_gc_dim
+        //           << " base_vel_dim=" << base_vel_dim
+        //           << " joint_count=" << joint_count
+        //           << " floating_base=" << (base_gc_dim == 7 ? "true" : "false")
+        //           << std::endl;
       }
     }
     if (base_gc_dim == 7 && base_vel_dim > 0) {
@@ -349,12 +349,12 @@ class ENVIRONMENT : public RaisimGymEnv {
       wrench_->getFramePosition(wrench_frame_idx_, wrench_pos_W);
       wrench_->getFrameOrientation(wrench_frame_idx_, wrench_rot_W);
       const Eigen::Vector3d wrench_pos = wrench_pos_W.e();
-      std::cout << "Wrench Position: " << wrench_pos.transpose() << std::endl;
+      // std::cout << "Wrench Position: " << wrench_pos.transpose() << std::endl;
       const Eigen::Matrix3d R_wrench = wrench_rot_W.e();
-      std::cout << "Wrench Rotation:" << R_wrench << std::endl;
+      // std::cout << "Wrench Rotation:" << R_wrench << std::endl;
       const Eigen::Vector3d target_center_world =
           wrench_pos + R_wrench * Eigen::Vector3d(0.0, -0.1125, 0.0);  // grasp_target_offset_wrench_;
-      std::cout << "Target Center World: " << target_center_world.transpose() << std::endl;
+      // std::cout << "Target Center World: " << target_center_world.transpose() << std::endl;
 
       raisim::Vec<3> ee_left_pos_W;
       raisim::Mat<3, 3> ee_left_rot_W;
@@ -377,7 +377,7 @@ class ENVIRONMENT : public RaisimGymEnv {
           base_quat.toRotationMatrix().transpose() * (center_world - base_pos);
       const Eigen::Vector3d new_base_pos =
           target_center_world - base_quat * grasp_center_offset_base;
-      std::cout << "New Base Position: " << new_base_pos.transpose() << std::endl;
+      // std::cout << "New Base Position: " << new_base_pos.transpose() << std::endl;
       ee_gc[0] = new_base_pos.x();
       ee_gc[1] = new_base_pos.y();
       ee_gc[2] = new_base_pos.z();
@@ -385,9 +385,9 @@ class ENVIRONMENT : public RaisimGymEnv {
       end_effector_->setState(ee_gc, ee_gv);
     }
     SetEndEffectorGeneralizedCoordinates(end_effector_, ee_left_init_, grasp_gc14_start_);
-    std::cout << "[reset] ee_gc(now)="
-              << end_effector_->getGeneralizedCoordinate().e().transpose()
-              << std::endl;
+    // std::cout << "[reset] ee_gc(now)="
+    //           << end_effector_->getGeneralizedCoordinate().e().transpose()
+    //           << std::endl;
     // updateWrenchPoseFromEndEffector();
 
     updateObservation();
@@ -512,13 +512,13 @@ class ENVIRONMENT : public RaisimGymEnv {
                       << std::setw(10) << base_quat_now.z() << std::endl;
             const auto gf = end_effector_->getGeneralizedForce().e();
             const int base_force_dim = std::min(6, static_cast<int>(gf.size()));
-            if (base_force_dim > 0) {
-              std::cout << "[step] base_pd_enabled=" << std::boolalpha
-                        << (joint_command_.has_base_command && has_base)
-                        << " base_force_enabled=" << base_force_enabled
-                        << " base_generalized_force=" << gf.head(base_force_dim).transpose()
-                        << std::noboolalpha << std::endl;
-            }
+            // if (base_force_dim > 0) {
+            //   std::cout << "[step] base_pd_enabled=" << std::boolalpha
+            //             << (joint_command_.has_base_command && has_base)
+            //             << " base_force_enabled=" << base_force_enabled
+            //             << " base_generalized_force=" << gf.head(base_force_dim).transpose()
+            //             << std::noboolalpha << std::endl;
+            // }
           }
 
         if (has_base && joint_command_.has_base_command) {
