@@ -1,5 +1,4 @@
 seed: 1
-record_video: true
 
 environment:
   render: true
@@ -8,7 +7,6 @@ environment:
   unity_bin: /home/Jiseong/raisim_ws/raisimlib/raisimUnity/linux/raisimUnity.x86_64
   unity_gui_settings: /home/Jiseong/raisim_ws/raisimlib/raisimUnity/linux/gui_settings.xml
   num_envs: 1
-  eval_every_n: 50
   num_threads: 1
   
   # simulation settings
@@ -31,21 +29,16 @@ environment:
   base_force_rot_i_max: 5.0 # Environment.hpp: clamp for rotation integral term
   base_force_max: 400.0     # Environment.hpp: cap on external base force
   base_torque_max: 200.0    # Environment.hpp: cap on external base torque
-  state_lpf_cutoff_hz: 15.0 # recommended: 10~20 Hz (Environment.hpp: state LPF)
   base_wrench_slew_force: 200.0     # UtilityFunctions: wrench slew limit (N/s)
   base_wrench_slew_torque: 200.0    # UtilityFunctions: wrench slew limit (Nm/s)
   kp_gear: 100.0 # Environment.hpp: gear coupling torque
   kd_gear: 0.1    # Environment.hpp: gear coupling torque
 
 
-  # action scaling
-  action_scale: 1.0
-  action_rot_scale: 1.0
-
   # command mode
   use_action_command: false
   command_mode: grasp  # sine | grasp
-  grasp_gc14_start: 0.6
+  grasp_gc14_start: 0.6  # override in Environment.hpp on ee_02_right_gc
   grasp_gc14_target: 0.133 # 0.1337
   grasp_approach_duration: 4.0
   grasp_gc14_duration: 4.0
@@ -58,20 +51,13 @@ environment:
   
   # [사용자님의 커스텀 파라미터 추가]
   thread_pitch: 0.01     # 기존 값 0.01 적용
-  pris_joint_index: 0
   
   # 초기 자세 (Grasping Initial Config)
   ee_01_left_gc: 0
-  ee_02_right_gc: 0.5 # 0 
+  ee_02_right_gc: 0 
   
   # 상시 적용 힘 (Constant Grasping Force)
   # 주석에 있던 계산식(68.0 * 0.3) 등은 미리 계산해서 넣거나 C++에서 처리
-  ee_01_left_gf: 0.0
-  ee_02_right_gf: 0.0 
-  
-  # Wrench 고정 위치/자세 (End-effector 기준, quaternion은 w x y z)
-  wrench_offset: [0.0, 0.0, -0.166]
-  wrench_quat: [1.0, 0.0, 0.0, 0.0]
 
   # PPO 학습 설정
   learning_rate: 3e-4
@@ -80,7 +66,6 @@ environment:
   n_epoch: 4
   gamma: 0.995
   lam: 0.95
-  mini_batch_size: 256
 
 architecture:
   policy_net: [128, 128]

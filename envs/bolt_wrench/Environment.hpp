@@ -319,6 +319,7 @@ class ENVIRONMENT : public RaisimGymEnv {
     // 1. Bolt 초기화
     Eigen::VectorXd bolt_gc = Eigen::VectorXd::Zero(bolt_->getGeneralizedCoordinateDim());
     Eigen::VectorXd bolt_gv = Eigen::VectorXd::Zero(bolt_->getDOF());
+    // bolt_gc.head(7) << 0.0, 0.0, 0.066, 1.0, 0.0, 0.0, 0.0; // core dumped because of fixed joint
     bolt_->setState(bolt_gc, bolt_gv);
 
     // 2. Wrench 초기화
@@ -385,9 +386,9 @@ class ENVIRONMENT : public RaisimGymEnv {
       end_effector_->setState(ee_gc, ee_gv);
     }
     SetEndEffectorGeneralizedCoordinates(end_effector_, ee_left_init_, grasp_gc14_start_);
-    // std::cout << "[reset] ee_gc(now)="
-    //           << end_effector_->getGeneralizedCoordinate().e().transpose()
-    //           << std::endl;
+    std::cout << "[reset] ee_gc(now)="
+              << end_effector_->getGeneralizedCoordinate().e().transpose()
+              << std::endl;
     // updateWrenchPoseFromEndEffector();
 
     updateObservation();

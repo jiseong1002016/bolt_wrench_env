@@ -49,7 +49,7 @@
   <joint name="bolt_base_joint" type="fixed">
     <parent link="world"/>
     <child link="bolt_base"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0.066" rpy="0 0 0"/>
   </joint>
   <link
     name="bolt_pris">

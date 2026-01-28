@@ -76,7 +76,7 @@ void JointCommandGenerator::update(JointCommand& command,
     // Hold the base at the reset-aligned pose until the move phase.
     const Eigen::Vector3d base_hold_pos(0.0, -1.33559, 1.0313); // (0.0, -1.26259, 1.034);
     const Eigen::Quaterniond base_hold_quat(1.0, 0.0, 0.0, 0.0);
-    const Eigen::Vector3d wrench_origin(0.0, 0.0, 0.034);
+    const Eigen::Vector3d wrench_home(0.0 , -0.33559, 0.1);
     if (sec >= 0.0 && sec < grasp_approach_duration_) {
       command.q_des[1] = start;
       command.base_pos = base_hold_pos;
@@ -104,7 +104,7 @@ void JointCommandGenerator::update(JointCommand& command,
       command.q_des[1] = target;
       const double denom = std::max(grasp_move_duration_, 1e-6);
       const double t = (sec - t1) / denom;
-      command.base_pos = base_hold_pos + t * (wrench_origin - base_hold_pos);
+      command.base_pos = base_hold_pos + t * (wrench_home - base_hold_pos);
       command.base_quat = base_hold_quat;
       command.has_base_command = true;
       // Apply feedforward torques only during moving and rotating phases.
@@ -120,7 +120,7 @@ void JointCommandGenerator::update(JointCommand& command,
       const double denom = std::max(grasp_rotate_duration_, 1e-6);
       const double t = (sec - t2) / denom;
       const double theta = 2.0 * M_PI * t;
-      command.base_pos = wrench_origin +
+      command.base_pos = wrench_home +
                          Eigen::Vector3d(grasp_rotate_radius_ * std::cos(theta),
                                          grasp_rotate_radius_ * std::sin(theta),
                                          0.0);
@@ -132,7 +132,7 @@ void JointCommandGenerator::update(JointCommand& command,
       }
     } else if (sec >= t3) {
       command.q_des[1] = target;
-      command.base_pos = wrench_origin +
+      command.base_pos = wrench_home +
                          Eigen::Vector3d(grasp_rotate_radius_, 0.0, 0.0);
       command.base_quat = base_hold_quat;
       command.has_base_command = true;

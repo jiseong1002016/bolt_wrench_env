@@ -57,6 +57,17 @@ if(UNIX)
   target_compile_options(bolt_wrench PRIVATE -O3 -ffast-math -g -fPIC)
 endif()
 
+# # 6.1 Sanitizer 옵션 (디버깅용)
+# option(BOLT_WRENCH_SANITIZE "Enable Address/Undefined sanitizers" OFF)
+# if(BOLT_WRENCH_SANITIZE)
+#   target_compile_options(bolt_wrench PRIVATE
+#     -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined
+#   )
+#   target_link_options(bolt_wrench PRIVATE
+#     -fsanitize=address,undefined
+#   )
+# endif()
+
 # 7. Demo generator executable (disabled)
 # add_executable(demo_generator
 #   demo_generator.cpp
