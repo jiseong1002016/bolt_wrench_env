@@ -47,17 +47,10 @@ class RaisimGymEnv {
   double getControlTimeStep() { return control_dt_; }
   double getSimulationTimeStep() { return simulation_dt_; }
   raisim::World* getWorld() { return world_.get(); }
-  void turnOffVisualization() { server_->hibernate(); }
-  void turnOnVisualization() { 
-    server_->wakeup(); }
-  //   if (server_) { // server_가 nullptr이 아닐 때만 실행
-  //     server_->wakeup(); 
-  //   } else {
-  //     // 서버가 없다는 경고를 한 번만 출력하도록 설정 가능
-  //   }
-  // }
-  void startRecordingVideo(const std::string& videoName ) { server_->startRecordingVideo(videoName); }
-  void stopRecordingVideo() { server_->stopRecordingVideo(); }
+  void turnOffVisualization() { if (server_) server_->hibernate(); }
+  void turnOnVisualization() { if (server_) server_->wakeup(); }
+  void startRecordingVideo(const std::string& videoName ) { if (server_) server_->startRecordingVideo(videoName); }
+  void stopRecordingVideo() { if (server_) server_->stopRecordingVideo(); }
   raisim::Reward& getRewards() { return rewards_; }
 
  protected:

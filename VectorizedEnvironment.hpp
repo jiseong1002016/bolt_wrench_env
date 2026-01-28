@@ -9,6 +9,8 @@
 #include "RaisimGymEnv.hpp"
 #include "omp.h"
 #include "Yaml.hpp"
+#include <tuple>
+#include <array>
 
 namespace raisim {
 
@@ -78,6 +80,26 @@ class VectorizedEnvironment {
       env->reset();
   }
 
+  void resetToDemoState(Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> bolt_gc,
+                        Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> bolt_gv,
+                        Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> wrench_gc,
+                        Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> wrench_gv,
+                        Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> robot_gc,
+                        Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> robot_gv) {
+    RSFATAL_IF(bolt_gc.rows() != num_envs_ || bolt_gv.rows() != num_envs_ ||
+               wrench_gc.rows() != num_envs_ || wrench_gv.rows() != num_envs_ ||
+               robot_gc.rows() != num_envs_ || robot_gv.rows() != num_envs_,
+               "resetToDemoState: batch size must match num_envs")
+    for (int i = 0; i < num_envs_; i++) {
+      environments_[i]->resetToDemoState(bolt_gc.row(i).transpose(),
+                                         bolt_gv.row(i).transpose(),
+                                         wrench_gc.row(i).transpose(),
+                                         wrench_gv.row(i).transpose(),
+                                         robot_gc.row(i).transpose(),
+                                         robot_gv.row(i).transpose());
+    }
+  }
+
   void observe(Eigen::Ref<EigenRowMajorMat> &ob, bool updateStatistics) {
 #pragma omp parallel for schedule(auto)
     for (int i = 0; i < num_envs_; i++)
@@ -135,6 +157,30 @@ class VectorizedEnvironment {
       env->setControlTimeStep(dt);
   }
 
+  std::vector<std::array<double, 4>> runFtPdSweep(
+      double dt_min,
+      double dt_max,
+      double dt_step,
+      double cutoff_min,
+      double cutoff_max,
+      double cutoff_step,
+      double sample_time,
+      int num_samples,
+      bool random_dt_step,
+      const std::string& urdf_type = "_stub-0") const {
+    RSFATAL_IF(environments_.empty(), "runFtPdSweep: no environments available")
+    return environments_.front()->runFtPdSweep(dt_min,
+                                               dt_max,
+                                               dt_step,
+                                               cutoff_min,
+                                               cutoff_max,
+                                               cutoff_step,
+                                               sample_time,
+                                               num_samples,
+                                               random_dt_step,
+                                               urdf_type);
+  }
+
   int getObDim() { return obDim_; }
   int getActionDim() { return actionDim_; }
   int getNumOfEnvs() { return num_envs_; }
@@ -151,6 +197,43 @@ class VectorizedEnvironment {
     for (auto& env : environments_) {
       env->setCurriculumFactor(factor);
     }
+  }
+
+  std::tuple<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
+             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> getDemoState() {
+    Eigen::VectorXd bolt_gc0, bolt_gv0, wrench_gc0, wrench_gv0, robot_gc0, robot_gv0;
+    environments_[0]->getDemoState(bolt_gc0, bolt_gv0, wrench_gc0, wrench_gv0, robot_gc0, robot_gv0);
+
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> bolt_gc(num_envs_, bolt_gc0.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> bolt_gv(num_envs_, bolt_gv0.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> wrench_gc(num_envs_, wrench_gc0.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> wrench_gv(num_envs_, wrench_gv0.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> robot_gc(num_envs_, robot_gc0.size());
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> robot_gv(num_envs_, robot_gv0.size());
+
+    bolt_gc.row(0) = bolt_gc0.transpose();
+    bolt_gv.row(0) = bolt_gv0.transpose();
+    wrench_gc.row(0) = wrench_gc0.transpose();
+    wrench_gv.row(0) = wrench_gv0.transpose();
+    robot_gc.row(0) = robot_gc0.transpose();
+    robot_gv.row(0) = robot_gv0.transpose();
+
+    for (int i = 1; i < num_envs_; i++) {
+      Eigen::VectorXd bolt_gc_i, bolt_gv_i, wrench_gc_i, wrench_gv_i, robot_gc_i, robot_gv_i;
+      environments_[i]->getDemoState(bolt_gc_i, bolt_gv_i, wrench_gc_i, wrench_gv_i, robot_gc_i, robot_gv_i);
+      bolt_gc.row(i) = bolt_gc_i.transpose();
+      bolt_gv.row(i) = bolt_gv_i.transpose();
+      wrench_gc.row(i) = wrench_gc_i.transpose();
+      wrench_gv.row(i) = wrench_gv_i.transpose();
+      robot_gc.row(i) = robot_gc_i.transpose();
+      robot_gv.row(i) = robot_gv_i.transpose();
+    }
+
+    return std::make_tuple(bolt_gc, bolt_gv, wrench_gc, wrench_gv, robot_gc, robot_gv);
   }
 
  private:

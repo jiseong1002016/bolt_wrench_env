@@ -2803,4 +2803,16 @@ void Node::Erase(const size_t index)
     }
 
 
+    const Node & Node::operator[] (const size_t index) const
+    {
+        NODE_IMP->InitSequence();
+        const Node * pNode = TYPE_IMP->GetNode(index);
+        if(pNode == nullptr)
+        {
+            g_NoneNode.Clear();
+            return g_NoneNode;
+        }
+        return *pNode;
+    }
+
 }

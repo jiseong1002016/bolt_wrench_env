@@ -30,12 +30,28 @@ PYBIND11_MODULE(RAISIMGYM_TORCH_ENV_NAME, m) {
     .def("isTerminalState", &VectorizedEnvironment<ENVIRONMENT>::isTerminalState)
     .def("setSimulationTimeStep", &VectorizedEnvironment<ENVIRONMENT>::setSimulationTimeStep)
     .def("setControlTimeStep", &VectorizedEnvironment<ENVIRONMENT>::setControlTimeStep)
+    .def("run_ft_pd_sweep", &VectorizedEnvironment<ENVIRONMENT>::runFtPdSweep,
+         py::arg("dt_min"),
+         py::arg("dt_max"),
+         py::arg("dt_step"),
+         py::arg("cutoff_min"),
+         py::arg("cutoff_max"),
+         py::arg("cutoff_step"),
+         py::arg("sample_time"),
+         py::arg("num_samples"),
+         py::arg("random_dt_step"),
+         py::arg("urdf_type") = "_stub-0")
     .def("getObDim", &VectorizedEnvironment<ENVIRONMENT>::getObDim)
     .def("getActionDim", &VectorizedEnvironment<ENVIRONMENT>::getActionDim)
     .def("getNumOfEnvs", &VectorizedEnvironment<ENVIRONMENT>::getNumOfEnvs)
     .def("turnOnVisualization", &VectorizedEnvironment<ENVIRONMENT>::turnOnVisualization)
     .def("turnOffVisualization", &VectorizedEnvironment<ENVIRONMENT>::turnOffVisualization)
     .def("setCurriculumFactor", &VectorizedEnvironment<ENVIRONMENT>::setCurriculumFactor) // additional function to control curriculum
+    .def("get_demo_state", &VectorizedEnvironment<ENVIRONMENT>::getDemoState)
+    .def("reset_to_demo_state", &VectorizedEnvironment<ENVIRONMENT>::resetToDemoState,
+         py::arg("bolt_gc"), py::arg("bolt_gv"),
+         py::arg("wrench_gc"), py::arg("wrench_gv"),
+         py::arg("robot_gc"), py::arg("robot_gv"))
     .def("stopRecordingVideo", &VectorizedEnvironment<ENVIRONMENT>::stopRecordingVideo)
     .def("startRecordingVideo", &VectorizedEnvironment<ENVIRONMENT>::startRecordingVideo)
     .def("curriculumUpdate", &VectorizedEnvironment<ENVIRONMENT>::curriculumUpdate)
