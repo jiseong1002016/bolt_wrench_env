@@ -118,25 +118,64 @@ void JointCommandGenerator::update(JointCommand& command,
                   << command.base_pos.transpose() << "\n" << std::endl;
       }
     } else if (sec >= t2 && sec < t3) {
-      // command.q_des[1] = target;
-      // const double denom = std::max(grasp_rotate_duration_, 1e-6);
-      // const double t = (sec - t2) / denom;
-      // const double theta = 2.0 * M_PI * t;
-      // command.base_pos = wrench_home +
-      //                    Eigen::Vector3d(grasp_rotate_radius_ * std::cos(theta),
-      //                                    grasp_rotate_radius_ * std::sin(theta),
-      //                                    0.0);
-      // command.base_quat = base_hold_quat;
-      // command.has_base_command = true;
+      command.q_des[1] = target;
+      const double denom = std::max(grasp_rotate_duration_, 1e-6);
+      const double t = (sec - t2) / denom;
+      const double theta = 0.5 * M_PI * t;
+      const double theta0 = -0.5 * M_PI;
+      const Eigen::Vector3d rotate_center(0.0, 0.0, 0.1);
+      command.base_pos = rotate_center +
+                         Eigen::Vector3d(grasp_rotate_radius_ * std::cos(theta + theta0),
+                                         grasp_rotate_radius_ * std::sin(theta + theta0),
+                                         0.0);
+      const Eigen::Vector3d to_center = rotate_center - command.base_pos;
+      if (to_center.norm() > 1e-9) {
+        const Eigen::Vector3d y_axis = to_center.normalized();
+        const Eigen::Vector3d z_axis = Eigen::Vector3d::UnitZ();
+        Eigen::Vector3d x_axis = y_axis.cross(z_axis);
+        if (x_axis.norm() > 1e-9) {
+          x_axis.normalize();
+          const Eigen::Vector3d z_axis_orth = x_axis.cross(y_axis).normalized();
+          Eigen::Matrix3d R;
+          R.col(0) = x_axis;
+          R.col(1) = y_axis;
+          R.col(2) = z_axis_orth;
+          command.base_quat = Eigen::Quaterniond(R);
+        } else {
+          command.base_quat = base_hold_quat;
+        }
+      } else {
+        command.base_quat = base_hold_quat;
+      }
+      command.has_base_command = true;
       if (should_print) {
         std::cout << "Rotating around Wrench: "
                   << command.base_pos.transpose() << "\n" << std::endl;
       }
     } else if (sec >= t3) {
       command.q_des[1] = target;
-      command.base_pos = wrench_home +
+      const Eigen::Vector3d rotate_center(0.0, 0.0, 0.1);
+      command.base_pos = rotate_center +
                          Eigen::Vector3d(grasp_rotate_radius_, 0.0, 0.0);
-      command.base_quat = base_hold_quat;
+      const Eigen::Vector3d to_center = rotate_center - command.base_pos;
+      if (to_center.norm() > 1e-9) {
+        const Eigen::Vector3d y_axis = to_center.normalized();
+        const Eigen::Vector3d z_axis = Eigen::Vector3d::UnitZ();
+        Eigen::Vector3d x_axis = y_axis.cross(z_axis);
+        if (x_axis.norm() > 1e-9) {
+          x_axis.normalize();
+          const Eigen::Vector3d z_axis_orth = x_axis.cross(y_axis).normalized();
+          Eigen::Matrix3d R;
+          R.col(0) = x_axis;
+          R.col(1) = y_axis;
+          R.col(2) = z_axis_orth;
+          command.base_quat = Eigen::Quaterniond(R);
+        } else {
+          command.base_quat = base_hold_quat;
+        }
+      } else {
+        command.base_quat = base_hold_quat;
+      }
       command.has_base_command = true;
       if (should_print) {
         std::cout << "Grasping Sequence Completed. Holding Position.\n" << std::endl;

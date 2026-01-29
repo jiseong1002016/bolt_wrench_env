@@ -40,11 +40,11 @@ environment:
   command_mode: grasp  # sine | grasp
   grasp_gc14_start: 0.6  # override in Environment.hpp on ee_02_right_gc
   grasp_gc14_target: 0.133 # 0.1337
-  grasp_approach_duration: 4.0
-  grasp_gc14_duration: 4.0
-  grasp_move_duration: 10.0
-  grasp_rotate_duration: 5.0
-  grasp_rotate_radius: 0.5
+  grasp_approach_duration: 3.0
+  grasp_gc14_duration: 3.0
+  grasp_move_duration: 4.0
+  grasp_rotate_duration: 20.0
+  grasp_rotate_radius: 0.33559
   # Feedforward torques applied via tau_total during grasp (t < t3)
   gf_6: 20.0
   gf_13: -20.0

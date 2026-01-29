@@ -411,8 +411,8 @@ class ENVIRONMENT : public RaisimGymEnv {
     using Ms = std::chrono::duration<double, std::milli>;
 
     if (server_) {
-      // server_->focusOn(end_effector_);
-      server_->focusOn(wrench_);
+      server_->focusOn(end_effector_);
+      // server_->focusOn(wrench_);
     }
 
     // Timing scaffold for command generation (currently unused; kept for quick profiling).
